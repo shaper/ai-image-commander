@@ -36,7 +36,7 @@ async function generateAndDisplayImage(prompt: string) {
     console.log('Generating image...');
     const { images } = await generateImage({
       model: openai.image('dall-e-3'),
-      prompt: prompt,
+      prompt,
     });
 
     if (images && images.length > 0) {
