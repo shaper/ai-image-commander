@@ -1,0 +1,4 @@
+- animated progress spinner
+- gallery view
+- optional persist to server storage
+- shell integration to display on shell login

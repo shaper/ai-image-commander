@@ -9,21 +9,25 @@
   },
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "public"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && copyfiles -u 1 \"public/**/*\" dist/public",
     "dev": "tsup --watch",
     "start": "node dist/cli.js"
   },
   "dependencies": {
     "@ai-sdk/openai": "latest",
     "ai": "latest",
+    "commander": "^13.1.0",
     "dotenv": "^16.4.7",
+    "prettier": "^3.4.2",
     "terminal-image": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
+    "copyfiles": "^2.4.1",
     "tsup": "^8.0.2",
     "typescript": "^5.3.3"
   }
