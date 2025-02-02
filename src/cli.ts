@@ -29,24 +29,20 @@ const rl: readline.Interface = readline.createInterface({
   output: process.stdout,
 });
 
-function promptUser(): void {
-  rl.question(
-    'Enter an image prompt (or "exit" to quit): ',
-    async (input: string) => {
-      if (input.toLowerCase() === 'exit') {
-        rl.close();
-        return;
-      }
-
-      await runImageGeneration(imageStore, input);
-      promptUser();
-    },
-  );
-}
-
 async function main() {
   await greetUser(imageStore, assetStore);
-  promptUser();
+  rl.setPrompt('Enter an image prompt (or "exit" to quit): ');
+  rl.prompt();
+  for await (const input of rl) {
+    if (input.trim().toLowerCase() === 'exit') {
+      break;
+    }
+    await runImageGeneration(imageStore, input);
+    rl.prompt();
+  }
+
+  console.log('May the wind fill your sails!');
+  rl.close();
 }
 
 program.action(async () => {
@@ -60,9 +56,4 @@ program.action(async () => {
 
 program.parseAsync(process.argv).catch(err => {
   console.error('Failed to run the application:', err);
-});
-
-rl.on('close', () => {
-  console.log('May the wind fill your sails!');
-  process.exit(0);
 });
