@@ -35,12 +35,39 @@ export class ImageStore {
   }
 
   /**
-   * Reads and returns the welcome content from the specified public directory.
+   * Lists all rendered image files (TXT format) in the base directory.
    */
-  static getWelcomeContent(publicDir: string): string | null {
-    const welcomeFilePath = path.join(publicDir, 'welcome.txt');
-    return fs.existsSync(welcomeFilePath)
-      ? fs.readFileSync(welcomeFilePath, 'utf8')
-      : null;
+  async listRenderedImages(): Promise<string[]> {
+    try {
+      const files = await fs.promises.readdir(this.baseDir);
+      return files.filter(file => file.endsWith('.txt'));
+    } catch (error) {
+      console.error('Error listing rendered images:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Loads the content of a rendered image file.
+   */
+  async loadRenderedImage(fileName: string): Promise<string> {
+    const filePath = path.join(this.baseDir, fileName);
+    return fs.promises.readFile(filePath, 'utf8');
+  }
+
+  /**
+   * Lists all full resolution image files (PNG format) in the base directory.
+   * Returns the full paths so they can be directly used by terminalFile.
+   */
+  async listFullResolutionImages(): Promise<string[]> {
+    try {
+      const files = await fs.promises.readdir(this.baseDir);
+      return files
+        .filter(file => file.endsWith('.png'))
+        .map(file => path.join(this.baseDir, file));
+    } catch (error) {
+      console.error('Error listing full resolution images:', error);
+      return [];
+    }
   }
 }

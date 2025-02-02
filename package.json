@@ -1,11 +1,11 @@
 {
   "name": "ai-image-generator-cli",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A CLI tool for generating images using AI",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "ai-image": "./dist/cli.js"
+    "aic": "./dist/cli.js"
   },
   "type": "module",
   "files": [
