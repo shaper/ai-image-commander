@@ -7,7 +7,6 @@ import terminalImage from 'terminal-image';
 async function showRandomPriorImage(
   imageStore: ImageStore,
 ): Promise<ImageEntry | undefined> {
-  console.log("Look at the incredible work you've been doing, my friend.");
   const availableFiles = await imageStore.listFullResolutionImages();
   if (availableFiles.length === 0) {
     return undefined;
@@ -31,11 +30,10 @@ async function showRandomPriorImage(
   };
 }
 
-export async function greetUser(
+export async function showNextImage(
   imageStore: ImageStore,
   assetStore: AssetStore,
 ): Promise<ImageEntry | undefined> {
-  console.log('Welcome to AI Image Commander!');
   const imageEntry = await showRandomPriorImage(imageStore);
   if (imageEntry) {
     return imageEntry;

@@ -1,8 +1,7 @@
 import { AssetStore } from './asset-store';
-import { ImageEntry } from './image-entry';
 import { ImageStore } from './image-store';
 import { runImageGeneration } from './generate';
-import { greetUser } from './welcome';
+import { showNextImage } from './welcome';
 import { Command } from 'commander';
 import 'dotenv/config';
 import open from 'open';
@@ -32,17 +31,20 @@ const rl: readline.Interface = readline.createInterface({
 });
 
 async function main() {
-  let latestImageEntry = await greetUser(imageStore, assetStore);
-  if (!latestImageEntry) {
-    console.log('No image entry found. Exiting.');
-    return;
-  }
-  rl.setPrompt('Enter an image prompt (or "exit", "open"): ');
+  console.log('Welcome to AI Image Commander!');
+  console.log("Look at the incredible work you've been doing, my friend.");
+  let latestImageEntry = await showNextImage(imageStore, assetStore);
+
+  console.log('Enter an image prompt (or "exit", "next", "open"): ');
+  rl.setPrompt('> ');
   rl.prompt();
 
   for await (const input of rl) {
     switch (input.trim().toLowerCase()) {
       case 'exit':
+        break;
+      case 'next':
+        latestImageEntry = await showNextImage(imageStore, assetStore);
         break;
       case 'open':
         if (latestImageEntry) {

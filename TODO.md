@@ -2,3 +2,9 @@
 - gallery view
 - optional persist to server storage
 - shell integration to display on shell login
+- look into related libs:
+  - blessed
+  - chalk-animation
+  - term-img
+  - terminal-kit
+  - asciify-image with terminal-canvas
