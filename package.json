@@ -15,6 +15,9 @@
   "scripts": {
     "build": "tsup && copyfiles -u 1 \"public/**/*\" dist/public",
     "dev": "tsup --watch",
+    "lint": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\"",
+    "type-check": "tsc --noEmit",
     "start": "node dist/cli.js"
   },
   "dependencies": {
