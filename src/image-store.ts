@@ -8,6 +8,12 @@ export class ImageStore {
     }
   }
 
+  timestampFromPath(filePath: string): number {
+    const fileName = path.basename(filePath);
+    const timestamp = fileName.split('-')[1];
+    return parseInt(timestamp);
+  }
+
   /**
    * Saves the full resolution image (PNG) to the base directory using the provided timestamp.
    */
@@ -18,6 +24,16 @@ export class ImageStore {
     const fileName = `image-${timestamp}.png`;
     const filePath = path.join(this.baseDir, fileName);
     await fs.promises.writeFile(filePath, imageBuffer);
+    return filePath;
+  }
+
+  /**
+   * Saves the prompt (TXT) to the base directory using the provided timestamp.
+   */
+  async savePrompt(timestamp: number, prompt: string): Promise<string> {
+    const fileName = `prompt-${timestamp}.txt`;
+    const filePath = path.join(this.baseDir, fileName);
+    await fs.promises.writeFile(filePath, prompt);
     return filePath;
   }
 
@@ -69,5 +85,20 @@ export class ImageStore {
       console.error('Error listing full resolution images:', error);
       return [];
     }
+  }
+
+  /**
+   * Loads the prompt for a full resolution image.
+   */
+  async loadPromptForFullResolutionImage(
+    fullResolutionFileName: string,
+  ): Promise<string | undefined> {
+    const promptFileName = fullResolutionFileName
+      .replace('image', 'prompt')
+      .replace('.png', '.txt');
+    const filePath = path.join(this.baseDir, promptFileName);
+    return fs.existsSync(filePath)
+      ? fs.promises.readFile(filePath, 'utf8')
+      : undefined;
   }
 }

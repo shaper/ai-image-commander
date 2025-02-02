@@ -1,3 +1,4 @@
+import { ImageEntry } from './image-entry';
 import { ImageStore } from './image-store';
 import { openai } from '@ai-sdk/openai';
 import { experimental_generateImage as generateImage } from 'ai';
@@ -6,7 +7,7 @@ import terminalImage from 'terminal-image';
 export async function runImageGeneration(
   imageStore: ImageStore,
   prompt: string,
-) {
+): Promise<ImageEntry | undefined> {
   try {
     console.log('Generating image...');
     const { images } = await generateImage({
@@ -21,17 +22,18 @@ export async function runImageGeneration(
       console.log(renderedImage);
 
       const timestamp = Date.now();
-      const filePath = await imageStore.saveFullResolutionImage(
+      return {
         timestamp,
-        imageBuffer,
-      );
-      console.log(`Saved full resolution image to ${filePath}`);
-
-      const renderedFilePath = await imageStore.saveRenderedImage(
-        timestamp,
-        renderedImage,
-      );
-      console.log(`Saved rendered image to ${renderedFilePath}`);
+        prompt,
+        renderedImagePath: await imageStore.saveRenderedImage(
+          timestamp,
+          renderedImage,
+        ),
+        fullResolutionImagePath: await imageStore.saveFullResolutionImage(
+          timestamp,
+          imageBuffer,
+        ),
+      };
     } else {
       console.log('No image generated.');
     }

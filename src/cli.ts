@@ -1,9 +1,11 @@
 import { AssetStore } from './asset-store';
+import { ImageEntry } from './image-entry';
 import { ImageStore } from './image-store';
 import { runImageGeneration } from './generate';
 import { greetUser } from './welcome';
 import { Command } from 'commander';
 import 'dotenv/config';
+import open from 'open';
 import readline from 'readline';
 
 const program = new Command();
@@ -30,14 +32,26 @@ const rl: readline.Interface = readline.createInterface({
 });
 
 async function main() {
-  await greetUser(imageStore, assetStore);
-  rl.setPrompt('Enter an image prompt (or "exit" to quit): ');
+  let latestImageEntry = await greetUser(imageStore, assetStore);
+  if (!latestImageEntry) {
+    console.log('No image entry found. Exiting.');
+    return;
+  }
+  rl.setPrompt('Enter an image prompt (or "exit", "open"): ');
   rl.prompt();
+
   for await (const input of rl) {
-    if (input.trim().toLowerCase() === 'exit') {
-      break;
+    switch (input.trim().toLowerCase()) {
+      case 'exit':
+        break;
+      case 'open':
+        if (latestImageEntry) {
+          open(latestImageEntry.fullResolutionImagePath);
+        }
+        break;
+      default:
+        latestImageEntry = await runImageGeneration(imageStore, input);
     }
-    await runImageGeneration(imageStore, input);
     rl.prompt();
   }
 
