@@ -1,17 +1,25 @@
 import { ImageEntry } from './image-entry';
 import { ImageStore } from './image-store';
-import { openai } from '@ai-sdk/openai';
+import { ProviderV1 } from '@ai-sdk/provider';
 import { experimental_generateImage as generateImage } from 'ai';
 import terminalImage from 'terminal-image';
 
 export async function runImageGeneration(
   imageStore: ImageStore,
   prompt: string,
+  provider: ProviderV1,
+  modelId: string,
 ): Promise<ImageEntry | undefined> {
   try {
     console.log('Generating image...');
+
+    const model = provider.imageModel ? provider.imageModel(modelId) : undefined;
+    if (!model) {
+      throw new Error('No model found');
+    }
+
     const { images } = await generateImage({
-      model: openai.image('dall-e-3'),
+      model,
       prompt,
     });
 

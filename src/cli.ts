@@ -3,10 +3,11 @@ import { ImageStore } from './image-store';
 import { runImageGeneration } from './generate';
 import { showNextImage } from './welcome';
 import { Command } from 'commander';
+import { input } from '@inquirer/prompts';
 import 'dotenv/config';
 import open from 'open';
-import readline from 'readline';
-
+import { select } from '@inquirer/prompts';
+import { listProviders } from './providers';
 const program = new Command();
 
 program
@@ -25,40 +26,52 @@ const saveDir: string = options.dir || '';
 const imageStore = new ImageStore(saveDir);
 const assetStore = new AssetStore();
 
-const rl: readline.Interface = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
 async function main() {
   console.log('Welcome to AI Image Commander!');
   console.log("Look at the incredible work you've been doing, my friend.");
   let latestImageEntry = await showNextImage(imageStore, assetStore);
 
-  console.log('Enter an image prompt (or "exit", "next", "open"): ');
-  rl.setPrompt('> ');
-  rl.prompt();
-
-  for await (const input of rl) {
-    switch (input.trim().toLowerCase()) {
+  let running = true;
+  let lastCommand = '';
+  while (running) {
+    const prompt = await input({ message: 'Enter an image prompt (or "exit", "next", "open") ' });
+    const command = prompt.trim().toLowerCase() || lastCommand;
+    switch (command) {
+      case 'e':
       case 'exit':
+        running = false;
         break;
+      case 'n':
       case 'next':
         latestImageEntry = await showNextImage(imageStore, assetStore);
         break;
+      case 'o':
       case 'open':
         if (latestImageEntry) {
           open(latestImageEntry.fullResolutionImagePath);
         }
         break;
       default:
-        latestImageEntry = await runImageGeneration(imageStore, input);
+        const chosenProvider = await select({
+          message: 'Select an image provider',
+          choices: listProviders().map(provider => ({
+            name: provider.name,
+            value: provider,
+            description: 'The provider to use for image generation',
+          })),
+        });
+        const chosenModel = await select({
+          message: 'Select an image model',
+          choices: chosenProvider.models.map(model => ({
+            name: model,
+            value: model,
+          })),
+        });
+        latestImageEntry = await runImageGeneration(imageStore, prompt, chosenProvider.provider, chosenModel);
     }
-    rl.prompt();
+    lastCommand = command;
   }
-
   console.log('May the wind fill your sails!');
-  rl.close();
 }
 
 program.action(async () => {
