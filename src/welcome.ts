@@ -1,4 +1,3 @@
-import { AssetStore } from './asset-store';
 import { ImageEntry } from './image-entry';
 import { ImageStore } from './image-store';
 import { shuffleArray } from './utils';
@@ -7,13 +6,13 @@ import terminalImage from 'terminal-image';
 async function showRandomPriorImage(
   imageStore: ImageStore,
 ): Promise<ImageEntry | undefined> {
-  const availableFiles = await imageStore.listFullResolutionImages();
+  const availableFiles = await imageStore.listImages();
   if (availableFiles.length === 0) {
     return undefined;
   }
   const shuffledFiles = shuffleArray(availableFiles);
   const randomFile = shuffledFiles[0];
-  const prompt = await imageStore.loadPromptForFullResolutionImage(randomFile);
+  const prompt = await imageStore.loadPromptForImage(randomFile);
   if (prompt) {
     console.log(`"${prompt}"`);
   }
@@ -24,22 +23,16 @@ async function showRandomPriorImage(
   console.log(terminalOutput);
   return {
     timestamp: imageStore.timestampFromPath(randomFile),
-    prompt: await imageStore.loadPromptForFullResolutionImage(randomFile),
-    renderedImagePath: randomFile,
-    fullResolutionImagePath: randomFile,
+    prompt: await imageStore.loadPromptForImage(randomFile),
+    imagePath: randomFile,
   };
 }
 
 export async function showNextImage(
-  imageStore: ImageStore,
-  assetStore: AssetStore,
+  imageStore: ImageStore
 ): Promise<ImageEntry | undefined> {
   const imageEntry = await showRandomPriorImage(imageStore);
   if (imageEntry) {
     return imageEntry;
-  }
-  const welcomeContent = assetStore.loadResource('welcome.txt');
-  if (welcomeContent) {
-    console.log(welcomeContent);
   }
 }

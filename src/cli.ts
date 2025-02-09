@@ -29,7 +29,7 @@ const assetStore = new AssetStore();
 async function main() {
   console.log('Welcome to AI Image Commander!');
   console.log("Look at the incredible work you've been doing, my friend.");
-  let latestImageEntry = await showNextImage(imageStore, assetStore);
+  let latestImageEntry = await showNextImage(imageStore);
 
   let running = true;
   let lastCommand = '';
@@ -43,12 +43,12 @@ async function main() {
         break;
       case 'n':
       case 'next':
-        latestImageEntry = await showNextImage(imageStore, assetStore);
+        latestImageEntry = await showNextImage(imageStore);
         break;
       case 'o':
       case 'open':
         if (latestImageEntry) {
-          open(latestImageEntry.fullResolutionImagePath);
+          open(latestImageEntry.imagePath);
         }
         break;
       default:

@@ -25,7 +25,6 @@ export async function runImageGeneration(
 
     if (images && images.length > 0) {
       const imageBuffer: Buffer = Buffer.from(images[0].uint8Array);
-      console.log('Rendering image...');
       const renderedImage: string = await terminalImage.buffer(imageBuffer);
       console.log(renderedImage);
 
@@ -33,11 +32,7 @@ export async function runImageGeneration(
       return {
         timestamp,
         prompt,
-        renderedImagePath: await imageStore.saveRenderedImage(
-          timestamp,
-          renderedImage,
-        ),
-        fullResolutionImagePath: await imageStore.saveFullResolutionImage(
+        imagePath: await imageStore.saveImage(
           timestamp,
           imageBuffer,
         ),
