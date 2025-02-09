@@ -1,12 +1,12 @@
-import { ProviderV1 } from '@ai-sdk/provider';
 import { deepinfra } from '@ai-sdk/deepinfra';
 import { fal } from '@ai-sdk/fal';
 import { fireworks } from '@ai-sdk/fireworks';
+import { vertex } from '@ai-sdk/google-vertex';
 import { luma } from '@ai-sdk/luma';
 import { openai } from '@ai-sdk/openai';
+import type { ProviderV1 } from '@ai-sdk/provider';
 import { replicate } from '@ai-sdk/replicate';
 import { togetherai } from '@ai-sdk/togetherai';
-import { vertex } from '@ai-sdk/google-vertex';
 
 export interface ProviderEntry {
   name: string;
@@ -17,19 +17,23 @@ export interface ProviderEntry {
 export function listProviders(): ProviderEntry[] {
   return [
     {
-      name: 'deepinfra', provider: deepinfra, models: [
+      name: 'deepinfra',
+      provider: deepinfra,
+      models: [
         'stabilityai/sd3.5',
         'black-forest-labs/FLUX-1.1-pro',
         'black-forest-labs/FLUX-1-schnell',
         'black-forest-labs/FLUX-1-dev',
         'black-forest-labs/FLUX-pro',
         'stabilityai/sd3.5-medium',
-        'stabilityai/sdxl-turbo'
-      ]
+        'stabilityai/sdxl-turbo',
+      ],
     },
     { name: 'luma', provider: luma, models: ['photon-1', 'photon-flash-1'] },
     {
-      name: 'fal', provider: fal, models: [
+      name: 'fal',
+      provider: fal,
+      models: [
         'fal-ai/aura-flow',
         'fal-ai/aura-sr',
         'fal-ai/bria/eraser',
@@ -78,23 +82,27 @@ export function listProviders(): ProviderEntry[] {
         'fal-ai/stable-cascade',
         'fal-ai/stable-diffusion-3.5-large',
         'fal-ai/stable-diffusion-3.5-medium',
-        'fashn/tryon'
-      ]
+        'fashn/tryon',
+      ],
     },
     {
-      name: 'fireworks', provider: fireworks, models: [
+      name: 'fireworks',
+      provider: fireworks,
+      models: [
         'accounts/fireworks/models/flux-1-dev-fp8',
         'accounts/fireworks/models/flux-1-schnell-fp8',
         'accounts/fireworks/models/playground-v2-5-1024px-aesthetic',
         'accounts/fireworks/models/japanese-stable-diffusion-xl',
         'accounts/fireworks/models/playground-v2-1024px-aesthetic',
         'accounts/fireworks/models/SSD-1B',
-        'accounts/fireworks/models/stable-diffusion-xl-1024-v1-0'
-      ]
+        'accounts/fireworks/models/stable-diffusion-xl-1024-v1-0',
+      ],
     },
     { name: 'openai', provider: openai, models: ['dall-e-2', 'dall-e-3'] },
     {
-      name: 'replicate', provider: replicate, models: [
+      name: 'replicate',
+      provider: replicate,
+      models: [
         'black-forest-labs/flux-1.1-pro',
         'black-forest-labs/flux-1.1-pro-ultra',
         'black-forest-labs/flux-dev',
@@ -121,11 +129,13 @@ export function listProviders(): ProviderEntry[] {
         'stability-ai/stable-diffusion-3.5-large',
         'stability-ai/stable-diffusion-3.5-large-turbo',
         'stability-ai/stable-diffusion-3.5-medium',
-        'tstramer/material-diffusion'
-      ]
+        'tstramer/material-diffusion',
+      ],
     },
     {
-      name: 'togetherai', provider: togetherai, models: [
+      name: 'togetherai',
+      provider: togetherai,
+      models: [
         'stabilityai/stable-diffusion-xl-base-1.0',
         'black-forest-labs/FLUX.1-dev',
         'black-forest-labs/FLUX.1-dev-lora',
@@ -135,13 +145,13 @@ export function listProviders(): ProviderEntry[] {
         'black-forest-labs/FLUX.1-redux',
         'black-forest-labs/FLUX.1.1-pro',
         'black-forest-labs/FLUX.1-pro',
-        'black-forest-labs/FLUX.1-schnell-Free'
-      ]
+        'black-forest-labs/FLUX.1-schnell-Free',
+      ],
     },
     {
-      name: 'vertex', provider: vertex, models: ['imagen-3.0-generate-001'
-        , 'imagen-3.0-fast-generate-001'
-      ]
+      name: 'vertex',
+      provider: vertex,
+      models: ['imagen-3.0-generate-001', 'imagen-3.0-fast-generate-001'],
     },
-  ]
+  ];
 }

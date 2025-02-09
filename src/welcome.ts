@@ -1,7 +1,7 @@
-import { ImageEntry } from './image-entry';
-import { ImageStore } from './image-store';
-import { shuffleArray } from './utils';
 import terminalImage from 'terminal-image';
+import type { ImageEntry } from './image-entry';
+import type { ImageStore } from './image-store';
+import { shuffleArray } from './utils';
 
 async function showRandomPriorImage(
   imageStore: ImageStore,
@@ -10,17 +10,20 @@ async function showRandomPriorImage(
   if (availableFiles.length === 0) {
     return undefined;
   }
+
   const shuffledFiles = shuffleArray(availableFiles);
   const randomFile = shuffledFiles[0];
   const prompt = await imageStore.loadPromptForImage(randomFile);
   if (prompt) {
     console.log(`"${prompt}"`);
   }
+
   const terminalOutput = await terminalImage.file(randomFile, {
     height: '75%',
     width: '75%',
   });
   console.log(terminalOutput);
+
   return {
     timestamp: imageStore.timestampFromPath(randomFile),
     prompt: await imageStore.loadPromptForImage(randomFile),
@@ -29,7 +32,7 @@ async function showRandomPriorImage(
 }
 
 export async function showNextImage(
-  imageStore: ImageStore
+  imageStore: ImageStore,
 ): Promise<ImageEntry | undefined> {
   const imageEntry = await showRandomPriorImage(imageStore);
   if (imageEntry) {

@@ -1,16 +1,20 @@
-import { AssetStore } from './asset-store';
-import { ImageStore } from './image-store';
-import { runImageGeneration } from './generate';
-import { showNextImage } from './welcome';
-import { Command } from 'commander';
+import { resolve } from 'node:path';
+import { ExitPromptError } from '@inquirer/core';
 import { input } from '@inquirer/prompts';
-import 'dotenv/config';
-import open from 'open';
 import { select } from '@inquirer/prompts';
+import { Command } from 'commander';
+import { config } from 'dotenv';
+import open from 'open';
+import { runImageGeneration } from './generate';
+import type { ImageEntry } from './image-entry';
+import { ImageStore } from './image-store';
 import { listProviders } from './providers';
-const program = new Command();
+import { showNextImage } from './welcome';
 
-program
+const configPath = resolve(process.env.HOME || '', '.aic.conf');
+config({ path: configPath });
+
+const program = new Command()
   .name('aic')
   .version('0.0.1')
   .description('A CLI tool for generating AI images')
@@ -24,17 +28,21 @@ const options = program.opts();
 const saveDir: string = options.dir || '';
 
 const imageStore = new ImageStore(saveDir);
-const assetStore = new AssetStore();
 
 async function main() {
-  console.log('Welcome to AI Image Commander!');
-  console.log("Look at the incredible work you've been doing, my friend.");
-  let latestImageEntry = await showNextImage(imageStore);
-
+  let latestImageEntry: ImageEntry | undefined;
   let running = true;
   let lastCommand = '';
   while (running) {
-    const prompt = await input({ message: 'Enter an image prompt (or "exit", "next", "open") ' });
+    let prompt = '';
+    try {
+      prompt = await input({ message: 'Enter a prompt' });
+    } catch (err) {
+      if (err instanceof ExitPromptError) {
+        running = false;
+        continue;
+      }
+    }
     const command = prompt.trim().toLowerCase() || lastCommand;
     switch (command) {
       case 'e':
@@ -43,6 +51,7 @@ async function main() {
         break;
       case 'n':
       case 'next':
+        console.log('Showing next image...');
         latestImageEntry = await showNextImage(imageStore);
         break;
       case 'o':
@@ -51,10 +60,10 @@ async function main() {
           open(latestImageEntry.imagePath);
         }
         break;
-      default:
+      default: {
         const chosenProvider = await select({
           message: 'Select an image provider',
-          choices: listProviders().map(provider => ({
+          choices: listProviders().map((provider) => ({
             name: provider.name,
             value: provider,
             description: 'The provider to use for image generation',
@@ -62,16 +71,21 @@ async function main() {
         });
         const chosenModel = await select({
           message: 'Select an image model',
-          choices: chosenProvider.models.map(model => ({
+          choices: chosenProvider.models.map((model) => ({
             name: model,
             value: model,
           })),
         });
-        latestImageEntry = await runImageGeneration(imageStore, prompt, chosenProvider.provider, chosenModel);
+        latestImageEntry = await runImageGeneration(
+          imageStore,
+          prompt,
+          chosenProvider.provider,
+          chosenModel,
+        );
+      }
     }
     lastCommand = command;
   }
-  console.log('May the wind fill your sails!');
 }
 
 program.action(async () => {
@@ -83,6 +97,6 @@ program.action(async () => {
   }
 });
 
-program.parseAsync(process.argv).catch(err => {
+program.parseAsync(process.argv).catch((err) => {
   console.error('Failed to run the application:', err);
 });

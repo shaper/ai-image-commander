@@ -8,15 +8,14 @@
     "aic": "./dist/cli.js"
   },
   "type": "module",
-  "files": [
-    "dist",
-    "public"
-  ],
+  "files": ["dist", "public"],
   "scripts": {
     "build": "tsup && copyfiles -u 1 \"public/**/*\" dist/public",
     "dev": "tsup --watch",
-    "lint": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\"",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\"",
+    "lint": "biome check",
+    "lint:fix": "biome check --write --unsafe",
+    "format": "biome format",
+    "format:fix": "biome format --write",
     "type-check": "tsc --noEmit",
     "start": "node dist/cli.js"
   },
@@ -30,15 +29,17 @@
     "@ai-sdk/provider": "^1.0.7",
     "@ai-sdk/replicate": "^0.1.7",
     "@ai-sdk/togetherai": "^0.1.9",
+    "@inquirer/core": "^10.1.6",
     "@inquirer/prompts": "^7.3.1",
     "ai": "latest",
     "commander": "^13.1.0",
     "dotenv": "^16.4.7",
     "open": "^10.1.0",
-    "prettier": "^3.5.0",
+    "ora": "^8.2.0",
     "terminal-image": "^2.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@types/node": "^20.17.17",
     "copyfiles": "^2.4.1",
     "tsup": "^8.3.6",

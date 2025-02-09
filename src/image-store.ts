@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 export class ImageStore {
   constructor(private readonly baseDir: string) {
@@ -11,16 +11,13 @@ export class ImageStore {
   timestampFromPath(filePath: string): number {
     const fileName = path.basename(filePath);
     const timestamp = fileName.split('-')[1];
-    return parseInt(timestamp);
+    return Number.parseInt(timestamp);
   }
 
   /**
    * Saves the full resolution image (PNG) to the base directory using the provided timestamp.
    */
-  async saveImage(
-    timestamp: number,
-    imageBuffer: Buffer,
-  ): Promise<string> {
+  async saveImage(timestamp: number, imageBuffer: Buffer): Promise<string> {
     const fileName = `image-${timestamp}.png`;
     const filePath = path.join(this.baseDir, fileName);
     await fs.promises.writeFile(filePath, imageBuffer);
@@ -45,8 +42,8 @@ export class ImageStore {
     try {
       const files = await fs.promises.readdir(this.baseDir);
       return files
-        .filter(file => file.endsWith('.png'))
-        .map(file => path.join(this.baseDir, file));
+        .filter((file) => file.endsWith('.png'))
+        .map((file) => path.join(this.baseDir, file));
     } catch (error) {
       console.error('Error listing full resolution images:', error);
       return [];
@@ -56,9 +53,7 @@ export class ImageStore {
   /**
    * Loads the prompt for a full resolution image.
    */
-  async loadPromptForImage(
-    imageFileName: string,
-  ): Promise<string | undefined> {
+  async loadPromptForImage(imageFileName: string): Promise<string | undefined> {
     const promptFileName = imageFileName
       .replace('image', 'prompt')
       .replace('.png', '.txt');
