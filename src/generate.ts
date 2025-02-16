@@ -48,10 +48,12 @@ export async function runImageGeneration(
       console.log(await terminalImage.buffer(imageBuffer));
 
       const timestamp = Date.now();
+      const imagePath = await imageStore.saveImage(timestamp, imageBuffer);
+      await imageStore.savePrompt(timestamp, prompt);
       return {
         timestamp,
         prompt,
-        imagePath: await imageStore.saveImage(timestamp, imageBuffer),
+        imagePath,
       };
     }
   } catch (error) {

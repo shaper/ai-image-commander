@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import { resolve } from 'node:path';
+import { ExitPromptError } from '@inquirer/core';
 import { input } from '@inquirer/prompts';
 import dotenv from 'dotenv';
 import { listProviders } from './providers';
@@ -58,14 +59,21 @@ export async function runConfigWizard(configPath: string): Promise<void> {
 
   // Prompt for API keys for each provider.
   const providers = listProviders();
-  for (const provider of providers) {
-    for (const apiKeyName of provider.apiKeyNames) {
-      const apiKey = await input({
-        message: `Enter your ${apiKeyName} for ${provider.name}:`,
-        default: currentConfig[apiKeyName] || '',
-      });
-      currentConfig[apiKeyName] = apiKey;
+  try {
+    for (const provider of providers) {
+      for (const apiKeyName of provider.apiKeyNames) {
+        const apiKey = await input({
+          message: `Enter your ${apiKeyName} for ${provider.name} (${provider.website}):`,
+          default: currentConfig[apiKeyName] || '',
+        });
+        currentConfig[apiKeyName] = apiKey;
+      }
     }
+  } catch (error) {
+    if (!(error instanceof ExitPromptError)) {
+      console.error(`Error configuring providers: ${error}`);
+    }
+    return;
   }
 
   // Build the content in dotenv format.

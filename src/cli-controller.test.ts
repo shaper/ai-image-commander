@@ -168,4 +168,104 @@ describe('CliController', () => {
     // Should exit on error
     expect(mockInput).toHaveBeenCalledTimes(1);
   });
+
+  it('should remember last provider and model for subsequent image generation', async () => {
+    const providerA = {
+      provider: 'providerA',
+      name: 'Provider A',
+      models: ['model1', 'model2'],
+    };
+
+    // Simulate two rounds of image generation.
+    // Round 1: prompt "first prompt", then choose providerA and "model1".
+    // Round 2: prompt "second prompt", then the provider and model select prompts should use
+    // the defaults from the previous round (providerA and "model1").
+    mockInput
+      .mockResolvedValueOnce('first prompt') // Round 1 prompt
+      .mockResolvedValueOnce('second prompt') // Round 2 prompt
+      .mockResolvedValueOnce('exit'); // Exit afterwards
+
+    // For round 1, the provider selection has no default (since lastSelectedProvider is undefined)
+    // and the model selection likewise uses no default.
+    // For round 2, we expect the provider selection prompt to have a default of providerA and
+    // the model selection prompt to have a default of "model1".
+    mockSelect
+      .mockResolvedValueOnce(providerA) // Round 1: provider select (default: undefined)
+      .mockResolvedValueOnce('model1') // Round 1: model select (default: undefined)
+      .mockResolvedValueOnce(providerA) // Round 2: provider select (default should be providerA)
+      .mockResolvedValueOnce('model1'); // Round 2: model select (default should be "model1")
+
+    const dummyImage = {
+      imagePath: 'dummy.png',
+      prompt: 'dummy',
+      timestamp: Date.now(),
+    };
+    mockRunImageGeneration.mockResolvedValue(dummyImage);
+
+    await controller.runCommandLoop();
+
+    // Check the select call arguments.
+    // Round 1:
+    const providerSelectCall1 = mockSelect.mock.calls[0][0];
+    expect(providerSelectCall1.message).toEqual('Choose a provider');
+    expect(providerSelectCall1.default).toBeUndefined();
+
+    const modelSelectCall1 = mockSelect.mock.calls[1][0];
+    expect(modelSelectCall1.message).toEqual('Choose an image model');
+    expect(modelSelectCall1.default).toBeUndefined();
+
+    // Round 2:
+    const providerSelectCall2 = mockSelect.mock.calls[2][0];
+    expect(providerSelectCall2.message).toEqual('Choose a provider');
+    expect(providerSelectCall2.default).toEqual(providerA);
+
+    const modelSelectCall2 = mockSelect.mock.calls[3][0];
+    expect(modelSelectCall2.message).toEqual('Choose an image model');
+    expect(modelSelectCall2.default).toEqual('model1');
+  });
+
+  it('should reset default model when provider is changed', async () => {
+    const providerA = {
+      provider: 'providerA',
+      name: 'Provider A',
+      models: ['modelA1', 'modelA2'],
+    };
+    const providerB = {
+      provider: 'providerB',
+      name: 'Provider B',
+      models: ['modelB1', 'modelB2'],
+    };
+
+    // Simulate two rounds of image generation.
+    // Round 1: prompt "first prompt", then choose providerA and "modelA1".
+    // Round 2: prompt "second prompt", then at provider selection the default is providerA
+    // but the user selects providerB instead. Since providerB is different, the model default should be cleared.
+    mockInput
+      .mockResolvedValueOnce('first prompt') // Round 1 prompt
+      .mockResolvedValueOnce('second prompt') // Round 2 prompt
+      .mockResolvedValueOnce('exit'); // Exit afterwards
+
+    mockSelect
+      .mockResolvedValueOnce(providerA) // Round 1: provider select (default: undefined)
+      .mockResolvedValueOnce('modelA1') // Round 1: model select (default: undefined)
+      .mockResolvedValueOnce(providerB) // Round 2: provider select (default should be providerA)
+      .mockResolvedValueOnce('modelB1'); // Round 2: model select; default should be undefined because provider changed
+
+    const dummyImage = {
+      imagePath: 'dummy.png',
+      prompt: 'dummy',
+      timestamp: Date.now(),
+    };
+    mockRunImageGeneration.mockResolvedValue(dummyImage);
+
+    await controller.runCommandLoop();
+
+    // Check the default values used in round 2.
+    const providerSelectCall2 = mockSelect.mock.calls[2][0];
+    expect(providerSelectCall2.default).toEqual(providerA);
+
+    const modelSelectCall2 = mockSelect.mock.calls[3][0];
+    // Because the provider changed (from providerA to providerB), the default model should be reset.
+    expect(modelSelectCall2.default).toBeUndefined();
+  });
 });
