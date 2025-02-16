@@ -1,5 +1,5 @@
 {
-  "name": "ai-image-generator-cli",
+  "name": "ai-image-commander",
   "version": "0.0.1",
   "description": "A CLI tool for generating images using AI",
   "main": "dist/index.js",
