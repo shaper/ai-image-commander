@@ -4,6 +4,8 @@ import ora from 'ora';
 import terminalImage from 'terminal-image';
 import type { ImageEntry } from './image-entry';
 import type { ImageStore } from './image-store';
+import imageType from 'image-type';
+import sharp from 'sharp';
 
 export async function runImageGeneration(
   imageStore: ImageStore,
@@ -28,10 +30,23 @@ export async function runImageGeneration(
     if (images && images.length > 0) {
       spinner.stop();
 
-      // TODO: support webp format e.g. from replicate.
-      const imageBuffer: Buffer = Buffer.from(images[0].uint8Array);
-      const renderedImage: string = await terminalImage.buffer(imageBuffer);
-      console.log(renderedImage);
+      let imageBuffer: Buffer = Buffer.from(images[0].uint8Array);
+
+      // Determine the format of the image.
+      const format = await imageType(imageBuffer);
+      const extension = format?.ext;
+      if (!extension) {
+        throw new Error('Unknown image format');
+      }
+
+      if (extension === 'webp') {
+        // `terminal-image` doesn't support WebP, so convert to PNG.
+        imageBuffer = await sharp(imageBuffer).png().toBuffer();
+      }
+
+      // Render the image to the terminal.
+      console.log(await terminalImage.buffer(imageBuffer));
+
       const timestamp = Date.now();
       return {
         timestamp,

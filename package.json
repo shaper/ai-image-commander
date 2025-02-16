@@ -8,7 +8,10 @@
     "aic": "./dist/cli.js"
   },
   "type": "module",
-  "files": ["dist", "public"],
+  "files": [
+    "dist",
+    "public"
+  ],
   "scripts": {
     "build": "tsup && copyfiles \"aic.conf.example\" dist && copyfiles -u 1 \"public/**/*\" dist/public",
     "dev": "tsup --watch",
@@ -34,8 +37,10 @@
     "ai": "latest",
     "commander": "^13.1.0",
     "dotenv": "^16.4.7",
+    "image-type": "^5.2.0",
     "open": "^10.1.0",
     "ora": "^8.2.0",
+    "sharp": "^0.33.5",
     "terminal-image": "^2.0.0"
   },
   "devDependencies": {
