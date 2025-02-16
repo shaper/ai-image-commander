@@ -56,6 +56,15 @@ async function main() {
   }
   config({ path: configPath });
 
+  // Check if at least one provider is fully configured.
+  if (!listProviders().some((provider) => hasApiKey(provider))) {
+    console.error(
+      'Error: No fully configured provider found (API keys missing). ' +
+        'Please run "aic config" to update your configuration.',
+    );
+    process.exit(1);
+  }
+
   const imageStore = new ImageStore(saveDir);
 
   let latestImageEntry: ImageEntry | undefined;
