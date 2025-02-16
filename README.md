@@ -1,15 +1,15 @@
 # AI Image Commander (`aic`) CLI Tool
 
-AI Image Commander, or `aic`, is a command-line tool for generating AI images interactively. `aic` is built with the [AI SDK by Vercel](https://sdk.vercel.ai/) and supports a variety of providers and models.
+AI Image Commander (`aic`) is a command-line tool for generating AI images interactively. `aic` is built with the [AI SDK by Vercel](https://sdk.vercel.ai/) and supports a variety of providers and models.
 
 ## Installation
-
-Clone this repository and install dependencies:
 
 ```bash
 git clone git@github.com:shaper/ai-image-commander.git
 cd ai-image-commander
 pnpm install
+pnpm build
+pnpm link --global
 ```
 
 ## Configuration
@@ -23,14 +23,6 @@ aic config
 ```
 
 This command will walk you through viewing and updating your configuration details.
-
-## Building
-
-To build the project, run:
-
-```bash
-pnpm build
-```
 
 ## Running the CLI Tool
 
@@ -62,7 +54,7 @@ Once running, the CLI offers several interactive commands:
 
 ## Author
 
-[Walter Korman](https://github.com/shaper).
+Walter Korman &middot; [GitHub](https://github.com/shaper) &middot; [X](https://x.com/shaper) &middot; [LinkedIn](https://www.linkedin.com/in/shaper/)
 
 ## License
 
