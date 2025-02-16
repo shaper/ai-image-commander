@@ -8,10 +8,7 @@
     "aic": "./dist/cli.js"
   },
   "type": "module",
-  "files": [
-    "dist",
-    "public"
-  ],
+  "files": ["dist", "public"],
   "scripts": {
     "build": "tsup && copyfiles \"aic.conf.example\" dist && copyfiles -u 1 \"public/**/*\" dist/public",
     "dev": "tsup --watch",

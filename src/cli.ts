@@ -8,7 +8,7 @@ import open from 'open';
 import { runImageGeneration } from './generate';
 import type { ImageEntry } from './image-entry';
 import { ImageStore } from './image-store';
-import { listProviders } from './providers';
+import { hasApiKey, listProviders } from './providers';
 import { showNextImage } from './welcome';
 import { getConfigPath, initConfig, runConfigWizard } from './config';
 
@@ -59,61 +59,61 @@ async function main() {
   printHelp();
 
   while (running) {
-    let prompt = '';
     try {
+      let prompt = '';
       prompt = await input({ message: 'Enter a prompt' });
+      const command = prompt.trim().toLowerCase() || lastCommand;
+      switch (command) {
+        case 'e':
+        case 'exit':
+          running = false;
+          break;
+        case 'n':
+        case 'next':
+          latestImageEntry = await showNextImage(imageStore);
+          break;
+        case 'o':
+        case 'open':
+          if (latestImageEntry) {
+            open(latestImageEntry.imagePath);
+          }
+          break;
+        case 'help':
+        case 'h':
+        case '?':
+          printHelp();
+          break;
+        default: {
+          const chosenProvider = await select({
+            message: 'Choose a provider',
+            choices: listProviders().map((provider) => ({
+              name: provider.name,
+              value: provider,
+              description: 'The provider to use for image generation',
+              disabled: !hasApiKey(provider) ? '🔒 No API key set' : false,
+            })),
+          });
+          const chosenModel = await select({
+            message: 'Choose an image model',
+            choices: chosenProvider.models.map((model) => ({
+              name: model,
+              value: model,
+            })),
+          });
+          latestImageEntry = await runImageGeneration(
+            imageStore,
+            prompt,
+            chosenProvider.provider,
+            chosenModel,
+          );
+        }
+      }
+      lastCommand = command;
     } catch (err) {
       if (err instanceof ExitPromptError) {
         running = false;
-        continue;
       }
     }
-    const command = prompt.trim().toLowerCase() || lastCommand;
-    switch (command) {
-      case 'e':
-      case 'exit':
-        running = false;
-        break;
-      case 'n':
-      case 'next':
-        latestImageEntry = await showNextImage(imageStore);
-        break;
-      case 'o':
-      case 'open':
-        if (latestImageEntry) {
-          open(latestImageEntry.imagePath);
-        }
-        break;
-      case 'help':
-      case 'h':
-      case '?':
-        printHelp();
-        break;
-      default: {
-        const chosenProvider = await select({
-          message: 'Choose a provider',
-          choices: listProviders().map((provider) => ({
-            name: provider.name,
-            value: provider,
-            description: 'The provider to use for image generation',
-          })),
-        });
-        const chosenModel = await select({
-          message: 'Choose an image model',
-          choices: chosenProvider.models.map((model) => ({
-            name: model,
-            value: model,
-          })),
-        });
-        latestImageEntry = await runImageGeneration(
-          imageStore,
-          prompt,
-          chosenProvider.provider,
-          chosenModel,
-        );
-      }
-    }
-    lastCommand = command;
   }
 }
 

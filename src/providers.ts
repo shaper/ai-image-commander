@@ -15,6 +15,10 @@ export interface ProviderEntry {
   apiKeyNames: string[];
 }
 
+export function hasApiKey(provider: ProviderEntry): boolean {
+  return provider.apiKeyNames.every((keyName) => process.env[keyName]);
+}
+
 export function listProviders(): ProviderEntry[] {
   return [
     {
