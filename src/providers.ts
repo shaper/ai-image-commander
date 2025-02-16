@@ -13,6 +13,7 @@ export interface ProviderEntry {
   provider: ProviderV1;
   models: string[];
   apiKeyNames: string[];
+  website: string;
 }
 
 export function hasApiKey(provider: ProviderEntry): boolean {
@@ -34,6 +35,7 @@ export function listProviders(): ProviderEntry[] {
         'stabilityai/sdxl-turbo',
       ],
       apiKeyNames: ['DEEPINFRA_API_KEY'],
+      website: 'https://deepinfra.com',
     },
     {
       name: 'fal',
@@ -90,6 +92,7 @@ export function listProviders(): ProviderEntry[] {
         'fashn/tryon',
       ],
       apiKeyNames: ['FAL_API_KEY'],
+      website: 'https://fal.ai',
     },
     {
       name: 'fireworks',
@@ -104,18 +107,21 @@ export function listProviders(): ProviderEntry[] {
         'accounts/fireworks/models/stable-diffusion-xl-1024-v1-0',
       ],
       apiKeyNames: ['FIREWORKS_API_KEY'],
+      website: 'https://fireworks.ai',
     },
     {
       name: 'luma',
       provider: luma,
       models: ['photon-1', 'photon-flash-1'],
       apiKeyNames: ['LUMA_API_KEY'],
+      website: 'https://luma.ai',
     },
     {
       name: 'openai',
       provider: openai,
       models: ['dall-e-2', 'dall-e-3'],
       apiKeyNames: ['OPENAI_API_KEY'],
+      website: 'https://openai.com',
     },
     {
       name: 'replicate',
@@ -150,6 +156,7 @@ export function listProviders(): ProviderEntry[] {
         'tstramer/material-diffusion',
       ],
       apiKeyNames: ['REPLICATE_API_TOKEN'],
+      website: 'https://replicate.com',
     },
     {
       name: 'togetherai',
@@ -167,6 +174,7 @@ export function listProviders(): ProviderEntry[] {
         'black-forest-labs/FLUX.1-schnell-Free',
       ],
       apiKeyNames: ['TOGETHERAI_API_KEY'],
+      website: 'https://together.ai',
     },
     {
       name: 'vertex',
@@ -177,6 +185,7 @@ export function listProviders(): ProviderEntry[] {
         'GOOGLE_VERTEX_PROJECT',
         'GOOGLE_VERTEX_LOCATION',
       ],
+      website: 'https://cloud.google.com/vertex-ai',
     },
   ];
 }

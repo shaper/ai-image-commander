@@ -1,9 +1,9 @@
+import type { ProviderV1 } from '@ai-sdk/provider';
+import { ExitPromptError } from '@inquirer/core';
 import type { ImageEntry } from './image-entry';
 import type { ImageStore } from './image-store';
 import { hasApiKey, listProviders } from './providers';
 import type { ProviderEntry } from './providers';
-import type { ProviderV1 } from '@ai-sdk/provider';
-import { ExitPromptError } from '@inquirer/core';
 
 interface CliControllerConfig {
   input: (options: { message: string; default?: string }) => Promise<string>;
