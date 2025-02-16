@@ -64,6 +64,7 @@ export async function runConfigWizard(configPath: string): Promise<void> {
         message: `Enter your ${apiKeyName} for ${provider.name}:`,
         default: currentConfig[apiKeyName] || '',
       });
+      currentConfig[apiKeyName] = apiKey;
     }
   }
 

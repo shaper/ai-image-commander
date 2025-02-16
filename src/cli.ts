@@ -1,4 +1,3 @@
-import { resolve } from 'node:path';
 import { ExitPromptError } from '@inquirer/core';
 import { input } from '@inquirer/prompts';
 import { select } from '@inquirer/prompts';
