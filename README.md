@@ -14,27 +14,15 @@ pnpm install
 
 ## Configuration
 
-Before you start generating images, you need to set up your configuration. There are two ways to do this:
+The first time you run `aic`, it will automatically create a configuration file at `~/.aic.conf` and guide you through setting up your API keys for various providers.
 
-### 1. Manual Setup
-
-If you prefer to set up your configuration manually, you can copy the example configuration file that's bundled with the installation. For example, if you installed `aic` globally, you can run:
-
-```bash
-cp "$(dirname $(which aic))/aic.conf.example" ~/.aic.conf
-```
-
-Then, open `~/.aic.conf` in your favorite editor and fill in your API key and any other required settings.
-
-### 2. Interactive Configuration
-
-Alternatively, you can run the interactive configuration command:
+You can also run the configuration wizard at any time to view or update your settings:
 
 ```bash
 aic config
 ```
 
-This command will detect the bundled configuration template and walk you through entering and saving your configuration details.
+This command will walk you through viewing and updating your configuration details.
 
 ## Building
 
@@ -65,8 +53,6 @@ Once running, the CLI offers several interactive commands:
 - **open/o**: Open the last generated image.
 - **help/h/?**: Display this help message.
 - **exit/e**: Exit the application.
-
-*If your configuration file (`~/.aic.conf`) is missing or incomplete, `aic` may guide you to run `aic config` to set it up properly.*
 
 ## Features
 

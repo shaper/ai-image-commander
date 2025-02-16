@@ -1,22 +1,19 @@
-import { input } from '@inquirer/prompts';
 import { existsSync } from 'node:fs';
-import { readFile, writeFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
-import os from 'node:os';
-import dotenv from 'dotenv';
 import { readFileSync, writeFileSync } from 'node:fs';
+import { readFile, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import { resolve } from 'node:path';
+import { input } from '@inquirer/prompts';
+import dotenv from 'dotenv';
 import { listProviders } from './providers';
 
 export const getConfigPath = () => resolve(os.homedir(), '.aic.conf');
 
 /**
  * Synchronously initializes the configuration file.
- *
- * If the config file (~/.aic.conf) doesn’t exist, this function will
- * copy the contents of aic.conf.example (assumed to be in the repo root)
- * to the target location.
+ * Returns true if config already existed, false if it was newly created.
  */
-export function initConfig(configPath: string): void {
+export function initConfig(configPath: string): boolean {
   if (!existsSync(configPath)) {
     const examplePath = resolve(__dirname, 'aic.conf.example');
     try {
@@ -25,11 +22,15 @@ export function initConfig(configPath: string): void {
       console.log(
         `Initialized configuration file at ${configPath} using template ${examplePath}`,
       );
+      return false;
     } catch (error) {
       console.error(`Failed to initialize config file: ${error}`);
+      throw error;
     }
   }
+  return true;
 }
+
 /**
  * Runs an interactive configuration wizard.
  * It loads an existing config (if available), prompts for missing values,
@@ -63,7 +64,6 @@ export async function runConfigWizard(configPath: string): Promise<void> {
         message: `Enter your ${apiKeyName} for ${provider.name}:`,
         default: currentConfig[apiKeyName] || '',
       });
-      currentConfig[apiKeyName] = apiKey;
     }
   }
 

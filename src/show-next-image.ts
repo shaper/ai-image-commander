@@ -3,7 +3,7 @@ import type { ImageEntry } from './image-entry';
 import type { ImageStore } from './image-store';
 import { shuffleArray } from './utils';
 
-async function showRandomPriorImage(
+export async function showNextImage(
   imageStore: ImageStore,
 ): Promise<ImageEntry | undefined> {
   const availableFiles = await imageStore.listImages();
@@ -26,16 +26,7 @@ async function showRandomPriorImage(
 
   return {
     timestamp: imageStore.timestampFromPath(randomFile),
-    prompt: await imageStore.loadPromptForImage(randomFile),
+    prompt,
     imagePath: randomFile,
   };
-}
-
-export async function showNextImage(
-  imageStore: ImageStore,
-): Promise<ImageEntry | undefined> {
-  const imageEntry = await showRandomPriorImage(imageStore);
-  if (imageEntry) {
-    return imageEntry;
-  }
 }

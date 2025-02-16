@@ -5,18 +5,15 @@ import { select } from '@inquirer/prompts';
 import { Command } from 'commander';
 import { config } from 'dotenv';
 import open from 'open';
+import { getConfigPath, initConfig, runConfigWizard } from './config';
 import { runImageGeneration } from './generate';
 import type { ImageEntry } from './image-entry';
 import { ImageStore } from './image-store';
 import { hasApiKey, listProviders } from './providers';
-import { showNextImage } from './welcome';
-import { getConfigPath, initConfig, runConfigWizard } from './config';
-
-const configPath = getConfigPath();
-initConfig(configPath);
-config({ path: configPath });
+import { showNextImage } from './show-next-image';
 
 const DEFAULT_SAVE_DIR = 'saved-images';
+
 const program = new Command()
   .name('aic')
   .version('0.0.1')
@@ -32,13 +29,11 @@ program
   .description('View or update your configuration settings')
   .action(async () => {
     console.log('Launching the configuration wizard...');
-    await runConfigWizard(configPath);
+    await runConfigWizard(getConfigPath());
   });
 
 const options = program.opts();
 const saveDir: string = options.dir || DEFAULT_SAVE_DIR;
-
-const imageStore = new ImageStore(saveDir);
 
 function printHelp() {
   console.log('\nMenu Options:');
@@ -53,6 +48,16 @@ function printHelp() {
 }
 
 async function main() {
+  const configPath = getConfigPath();
+  const configExists = initConfig(configPath);
+  if (!configExists) {
+    console.log('No configuration file found. Running setup wizard...');
+    await runConfigWizard(configPath);
+  }
+  config({ path: configPath });
+
+  const imageStore = new ImageStore(saveDir);
+
   let latestImageEntry: ImageEntry | undefined;
   let running = true;
   let lastCommand = '';

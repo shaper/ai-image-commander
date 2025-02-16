@@ -1,11 +1,11 @@
 import type { ProviderV1 } from '@ai-sdk/provider';
 import { experimental_generateImage as generateImage } from 'ai';
+import imageType from 'image-type';
 import ora from 'ora';
+import sharp from 'sharp';
 import terminalImage from 'terminal-image';
 import type { ImageEntry } from './image-entry';
 import type { ImageStore } from './image-store';
-import imageType from 'image-type';
-import sharp from 'sharp';
 
 export async function runImageGeneration(
   imageStore: ImageStore,
