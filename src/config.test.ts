@@ -1,13 +1,13 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
-import { input } from '@inquirer/prompts';
-import dotenv from 'dotenv';
-import { listProviders } from './providers';
-import { initConfig, runConfigWizard } from './config';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { ProviderV1 } from '@ai-sdk/provider';
+import { input } from '@inquirer/prompts';
+import dotenv from 'dotenv';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { initConfig, runConfigWizard } from './config';
+import { listProviders } from './providers';
 
 // Mock all external dependencies
 vi.mock('node:fs');
