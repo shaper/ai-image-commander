@@ -65,7 +65,6 @@ describe('showNextImage', () => {
     });
     expect(terminalImage.file).toHaveBeenCalledWith(
       expect.stringContaining('/path/to/image'),
-      { height: '75%', width: '75%' },
     );
   });
 
