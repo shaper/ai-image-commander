@@ -1,6 +1,6 @@
 # AI Image Commander (`aic`) CLI Tool
 
-`aic` is a command-line tool for generating AI images interactively. The tool requires a configuration file with your API key and other settings. You can set this up manually or use the interactive configuration wizard.
+AI Image Commander, or `aic`, is a command-line tool for generating AI images interactively. `aic` is built with the [AI SDK by Vercel](https://sdk.vercel.ai/) and supports a variety of providers and models.
 
 ## Installation
 
@@ -60,6 +60,10 @@ Once running, the CLI offers several interactive commands:
 - **Configuration Wizard:** Easily manage your API key and settings via `aic config`.
 - **Provider & Model Selection:** Choose from available providers and image models during image generation.
 
+## Author
+
+[Walter Korman](https://github.com/shaper).
+
 ## License
 
-`aic` is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+AI Image Commander is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

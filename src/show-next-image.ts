@@ -18,10 +18,7 @@ export async function showNextImage(
     console.log(`"${prompt}"`);
   }
 
-  const terminalOutput = await terminalImage.file(randomFile, {
-    height: '75%',
-    width: '75%',
-  });
+  const terminalOutput = await terminalImage.file(randomFile);
   console.log(terminalOutput);
 
   return {
