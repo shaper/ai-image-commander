@@ -1,7 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-export class ImageStore {
+export interface ImageStore {
+  saveImage: (timestamp: number, imageBuffer: Buffer) => Promise<string>;
+  savePrompt: (timestamp: number, prompt: string) => Promise<string>;
+  listImages: () => Promise<string[]>;
+  loadPromptForImage: (imageFileName: string) => Promise<string | undefined>;
+}
+
+export class LocalImageStore implements ImageStore {
   constructor(private readonly baseDir: string) {
     if (!fs.existsSync(this.baseDir)) {
       fs.mkdirSync(this.baseDir, { recursive: true });
