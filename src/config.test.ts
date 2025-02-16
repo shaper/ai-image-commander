@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { initConfig, runConfigWizard } from './config';
 import { listProviders } from './providers';
+import type { PathLike } from 'node:fs';
 
 // Mock all external dependencies
 vi.mock('node:fs');
@@ -136,6 +137,121 @@ describe('Configuration Management', () => {
           'Enter your TEST_API_KEY for TestProvider (https://testprovider.com):',
         default: 'old_test_value',
       });
+      expect(writeFile).toHaveBeenCalledWith(
+        tempConfigPath,
+        'EXISTING_KEY=existing_value\nTEST_API_KEY=test_input_value',
+        { encoding: 'utf8' },
+      );
+    });
+  });
+
+  describe('runConfigWizard with import configuration', () => {
+    const importFile = join(tmpdir(), 'imported.env');
+
+    it('should import configuration from provided file when creating new config', async () => {
+      // Simulate that the main config file does not exist, but the import file does.
+      vi.mocked(existsSync).mockImplementation((path: PathLike) => {
+        if (path.toString() === importFile) return true;
+        return false;
+      });
+
+      vi.mocked(readFile).mockImplementation(async (filePath, encoding) => {
+        if (filePath === importFile) return 'TEST_API_KEY=imported_value';
+        return '';
+      });
+
+      // Mock dotenv.parse to handle the imported content
+      vi.mocked(dotenv.parse).mockReturnValue({
+        TEST_API_KEY: 'imported_value',
+      });
+
+      await runConfigWizard(tempConfigPath, importFile);
+
+      // The prompt should use the imported value as default.
+      expect(input).toHaveBeenCalledWith({
+        message:
+          'Enter your TEST_API_KEY for TestProvider (https://testprovider.com):',
+        default: 'imported_value',
+      });
+      expect(writeFile).toHaveBeenCalledWith(
+        tempConfigPath,
+        'TEST_API_KEY=test_input_value',
+        { encoding: 'utf8' },
+      );
+    });
+
+    it('should warn and ignore missing import file if it does not exist', async () => {
+      const missingImportFile = join(tmpdir(), 'missing.env');
+      // Simulate that neither the main config nor the import file exist.
+      vi.mocked(existsSync).mockImplementation(() => false);
+
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      await runConfigWizard(tempConfigPath, missingImportFile);
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        `Import file ${missingImportFile} does not exist.`,
+      );
+      expect(input).toHaveBeenCalledWith({
+        message:
+          'Enter your TEST_API_KEY for TestProvider (https://testprovider.com):',
+        default: '',
+      });
+      expect(writeFile).toHaveBeenCalledWith(
+        tempConfigPath,
+        'TEST_API_KEY=test_input_value',
+        { encoding: 'utf8' },
+      );
+    });
+
+    it('should merge imported config with existing config when updating an existing config file', async () => {
+      // Simulate that both the main config and the import file exist.
+      vi.mocked(existsSync).mockImplementation((path: PathLike) => {
+        if (
+          path.toString() === tempConfigPath ||
+          path.toString() === importFile
+        )
+          return true;
+        return false;
+      });
+
+      vi.mocked(readFile).mockImplementation(async (filePath, encoding) => {
+        if (filePath === tempConfigPath) {
+          // Existing config contains two keys.
+          return 'EXISTING_KEY=existing_value\nTEST_API_KEY=old_test_value';
+        }
+        if (filePath === importFile) {
+          // The import file provides a new value for TEST_API_KEY.
+          return 'TEST_API_KEY=imported_value';
+        }
+        return '';
+      });
+
+      // Override dotenv.parse so that it dynamically parses the file content.
+      vi.mocked(dotenv.parse).mockImplementation((content: string | Buffer) => {
+        return content
+          .toString()
+          .split('\n')
+          .reduce(
+            (acc, line) => {
+              const [key, ...vals] = line.split('=');
+              acc[key] = vals.join('=');
+              return acc;
+            },
+            {} as Record<string, string>,
+          );
+      });
+
+      await runConfigWizard(tempConfigPath, importFile);
+
+      // After merging, the imported value should override the old value.
+      expect(input).toHaveBeenCalledWith({
+        message:
+          'Enter your TEST_API_KEY for TestProvider (https://testprovider.com):',
+        default: 'imported_value',
+      });
+      // The final written config should preserve EXISTING_KEY from the original config
+      // and update TEST_API_KEY with the user prompt input (test_input_value).
       expect(writeFile).toHaveBeenCalledWith(
         tempConfigPath,
         'EXISTING_KEY=existing_value\nTEST_API_KEY=test_input_value',
