@@ -56,12 +56,16 @@ async function main() {
   let latestImageEntry: ImageEntry | undefined;
   let running = true;
   let lastCommand = '';
+  let lastPrompt = '';
   printHelp();
 
   while (running) {
     try {
       let prompt = '';
-      prompt = await input({ message: 'Enter a prompt' });
+      prompt = await input({
+        message: 'Enter a prompt',
+        default: lastPrompt.trim() || undefined,
+      });
       const command = prompt.trim().toLowerCase() || lastCommand;
       switch (command) {
         case 'e':
@@ -84,6 +88,7 @@ async function main() {
           printHelp();
           break;
         default: {
+          lastPrompt = prompt;
           const chosenProvider = await select({
             message: 'Choose a provider',
             choices: listProviders().map((provider) => ({
