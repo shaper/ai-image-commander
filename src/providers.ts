@@ -173,7 +173,7 @@ export function listProviders(): ProviderEntry[] {
         'black-forest-labs/FLUX.1-pro',
         'black-forest-labs/FLUX.1-schnell-Free',
       ],
-      apiKeyNames: ['TOGETHERAI_API_KEY'],
+      apiKeyNames: ['TOGETHER_AI_API_KEY'],
       website: 'https://together.ai',
     },
     {

@@ -14,7 +14,11 @@ pnpm link --global
 
 ## Configuration
 
-The first time you run `aic`, it will automatically create a configuration file at `~/.aic.conf` and guide you through setting up your API keys for various providers.
+The first time you run `aic`, it will automatically create a configuration file at `~/.aic.conf` and guide you through setting up your API keys for various providers. If you already have a configuration file with API keys, you can import it during first run:
+
+```bash
+aic --from .env
+```
 
 You can also run the configuration wizard at any time to view or update your settings:
 
@@ -22,7 +26,11 @@ You can also run the configuration wizard at any time to view or update your set
 aic config
 ```
 
-This command will walk you through viewing and updating your configuration details.
+This command will walk you through viewing and updating your configuration details. If you already have a configuration file with some or all of the involved API keys with the same names, you can import settings from an existing file:
+
+```bash
+aic config --from .env
+```
 
 ## Running the CLI Tool
 
@@ -35,6 +43,7 @@ aic [OPTIONS]
 ### Available Options
 
 - `-d, --dir <directory>`: Directory where generated images will be stored (default: `saved-images`).
+- `--from <file>`: Path to an existing .env or config file to import settings from. This is useful for first-time setup or when running `aic config`.
 
 ### Interactive Commands
 

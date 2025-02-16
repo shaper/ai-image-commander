@@ -1,5 +1,5 @@
 import { input, select } from '@inquirer/prompts';
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { config } from 'dotenv';
 import open from 'open';
 import { CliController } from './cli-controller';
@@ -19,14 +19,26 @@ const program = new Command()
     '-d, --dir <directory>',
     'Directory where images are stored',
     DEFAULT_SAVE_DIR,
+  )
+  .addOption(
+    new Option(
+      '--from <file>',
+      'Path to an existing .env or config file to import settings from',
+    ),
   );
 
 program
   .command('config')
   .description('View or update your configuration settings')
-  .action(async () => {
+  .addOption(
+    new Option(
+      '--from <file>',
+      'Path to an existing .env or config file to import settings from',
+    ),
+  )
+  .action(async (options) => {
     console.log('Launching the configuration wizard...');
-    await runConfigWizard(getConfigPath());
+    await runConfigWizard(getConfigPath(), options.from);
   });
 
 const options = program.opts();
@@ -38,7 +50,7 @@ program.action(async () => {
     const configExists = initConfig(configPath);
     if (!configExists) {
       console.log('No configuration file found. Running setup wizard...');
-      await runConfigWizard(configPath);
+      await runConfigWizard(configPath, options.from);
     }
     config({ path: configPath });
 
