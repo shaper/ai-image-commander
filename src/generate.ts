@@ -28,6 +28,7 @@ export async function runImageGeneration(
     if (images && images.length > 0) {
       spinner.stop();
 
+      // TODO: support webp format e.g. from replicate.
       const imageBuffer: Buffer = Buffer.from(images[0].uint8Array);
       const renderedImage: string = await terminalImage.buffer(imageBuffer);
       console.log(renderedImage);

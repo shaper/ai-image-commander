@@ -12,6 +12,7 @@ export interface ProviderEntry {
   name: string;
   provider: ProviderV1;
   models: string[];
+  apiKeyNames: string[];
 }
 
 export function listProviders(): ProviderEntry[] {
@@ -28,8 +29,8 @@ export function listProviders(): ProviderEntry[] {
         'stabilityai/sd3.5-medium',
         'stabilityai/sdxl-turbo',
       ],
+      apiKeyNames: ['DEEPINFRA_API_KEY'],
     },
-    { name: 'luma', provider: luma, models: ['photon-1', 'photon-flash-1'] },
     {
       name: 'fal',
       provider: fal,
@@ -84,6 +85,7 @@ export function listProviders(): ProviderEntry[] {
         'fal-ai/stable-diffusion-3.5-medium',
         'fashn/tryon',
       ],
+      apiKeyNames: ['FAL_API_KEY'],
     },
     {
       name: 'fireworks',
@@ -97,8 +99,20 @@ export function listProviders(): ProviderEntry[] {
         'accounts/fireworks/models/SSD-1B',
         'accounts/fireworks/models/stable-diffusion-xl-1024-v1-0',
       ],
+      apiKeyNames: ['FIREWORKS_API_KEY'],
     },
-    { name: 'openai', provider: openai, models: ['dall-e-2', 'dall-e-3'] },
+    {
+      name: 'luma',
+      provider: luma,
+      models: ['photon-1', 'photon-flash-1'],
+      apiKeyNames: ['LUMA_API_KEY'],
+    },
+    {
+      name: 'openai',
+      provider: openai,
+      models: ['dall-e-2', 'dall-e-3'],
+      apiKeyNames: ['OPENAI_API_KEY'],
+    },
     {
       name: 'replicate',
       provider: replicate,
@@ -131,6 +145,7 @@ export function listProviders(): ProviderEntry[] {
         'stability-ai/stable-diffusion-3.5-medium',
         'tstramer/material-diffusion',
       ],
+      apiKeyNames: ['REPLICATE_API_TOKEN'],
     },
     {
       name: 'togetherai',
@@ -147,11 +162,17 @@ export function listProviders(): ProviderEntry[] {
         'black-forest-labs/FLUX.1-pro',
         'black-forest-labs/FLUX.1-schnell-Free',
       ],
+      apiKeyNames: ['TOGETHERAI_API_KEY'],
     },
     {
       name: 'vertex',
       provider: vertex,
       models: ['imagen-3.0-generate-001', 'imagen-3.0-fast-generate-001'],
+      apiKeyNames: [
+        'GOOGLE_APPLICATION_CREDENTIALS',
+        'GOOGLE_VERTEX_PROJECT',
+        'GOOGLE_VERTEX_LOCATION',
+      ],
     },
   ];
 }

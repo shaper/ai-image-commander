@@ -10,7 +10,7 @@
   "type": "module",
   "files": ["dist", "public"],
   "scripts": {
-    "build": "tsup && copyfiles -u 1 \"public/**/*\" dist/public",
+    "build": "tsup && copyfiles \"aic.conf.example\" dist && copyfiles -u 1 \"public/**/*\" dist/public",
     "dev": "tsup --watch",
     "lint": "biome check",
     "lint:fix": "biome check --write --unsafe",

@@ -10,10 +10,13 @@ import type { ImageEntry } from './image-entry';
 import { ImageStore } from './image-store';
 import { listProviders } from './providers';
 import { showNextImage } from './welcome';
+import { getConfigPath, initConfig, runConfigWizard } from './config';
 
-const configPath = resolve(process.env.HOME || '', '.aic.conf');
+const configPath = getConfigPath();
+initConfig(configPath);
 config({ path: configPath });
 
+const DEFAULT_SAVE_DIR = 'saved-images';
 const program = new Command()
   .name('aic')
   .version('0.0.1')
@@ -21,18 +24,40 @@ const program = new Command()
   .option(
     '-d, --dir <directory>',
     'Directory where images are stored',
-    'saved-images',
+    DEFAULT_SAVE_DIR,
   );
 
+program
+  .command('config')
+  .description('View or update your configuration settings')
+  .action(async () => {
+    console.log('Launching the configuration wizard...');
+    await runConfigWizard(configPath);
+  });
+
 const options = program.opts();
-const saveDir: string = options.dir || '';
+const saveDir: string = options.dir || DEFAULT_SAVE_DIR;
 
 const imageStore = new ImageStore(saveDir);
+
+function printHelp() {
+  console.log('\nMenu Options:');
+  console.log(
+    '  - [prompt text] : Generate an AI image with the given prompt.',
+  );
+  console.log("  - 'next' or 'n' : Show next image in the store.");
+  console.log("  - 'open' or 'o' : Open the last generated image.");
+  console.log("  - 'help', 'h' or '?' : Show this help message.");
+  console.log("  - 'exit' or 'e' : Exit the application.");
+  console.log('');
+}
 
 async function main() {
   let latestImageEntry: ImageEntry | undefined;
   let running = true;
   let lastCommand = '';
+  printHelp();
+
   while (running) {
     let prompt = '';
     try {
@@ -51,7 +76,6 @@ async function main() {
         break;
       case 'n':
       case 'next':
-        console.log('Showing next image...');
         latestImageEntry = await showNextImage(imageStore);
         break;
       case 'o':
@@ -60,9 +84,14 @@ async function main() {
           open(latestImageEntry.imagePath);
         }
         break;
+      case 'help':
+      case 'h':
+      case '?':
+        printHelp();
+        break;
       default: {
         const chosenProvider = await select({
-          message: 'Select an image provider',
+          message: 'Choose a provider',
           choices: listProviders().map((provider) => ({
             name: provider.name,
             value: provider,
@@ -70,7 +99,7 @@ async function main() {
           })),
         });
         const chosenModel = await select({
-          message: 'Select an image model',
+          message: 'Choose an image model',
           choices: chosenProvider.models.map((model) => ({
             name: model,
             value: model,
