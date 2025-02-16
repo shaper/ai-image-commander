@@ -52,6 +52,7 @@ describe('Providers', () => {
         provider: {} as ProviderV1,
         models: ['model1'],
         apiKeyNames: ['TEST_API_KEY'],
+        website: 'https://testprovider.com',
       };
 
       process.env.TEST_API_KEY = 'test-key';
@@ -65,6 +66,7 @@ describe('Providers', () => {
         provider: {} as ProviderV1,
         models: ['model1'],
         apiKeyNames: ['MISSING_API_KEY'],
+        website: 'https://testprovider.com',
       };
 
       expect(hasApiKey(mockProvider)).toBe(false);
@@ -76,6 +78,7 @@ describe('Providers', () => {
         provider: {} as ProviderV1,
         models: ['model1'],
         apiKeyNames: ['EMPTY_API_KEY'],
+        website: 'https://testprovider.com',
       };
 
       process.env.EMPTY_API_KEY = '';
@@ -89,6 +92,7 @@ describe('Providers', () => {
         provider: {} as ProviderV1,
         models: ['model1'],
         apiKeyNames: ['KEY1', 'KEY2', 'KEY3'],
+        website: 'https://testprovider.com',
       };
 
       // Test when all keys are present
@@ -108,6 +112,7 @@ describe('Providers', () => {
         provider: {} as ProviderV1,
         models: ['model1'],
         apiKeyNames: [],
+        website: 'https://testprovider.com',
       };
 
       expect(hasApiKey(mockProvider)).toBe(true);

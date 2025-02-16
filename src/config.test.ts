@@ -43,6 +43,7 @@ describe('Configuration Management', () => {
         provider: mockProvider,
         models: ['test-model'],
         apiKeyNames: ['TEST_API_KEY'],
+        website: 'https://testprovider.com',
       },
     ]);
     vi.mocked(input).mockResolvedValue('test_input_value');
@@ -84,7 +85,8 @@ describe('Configuration Management', () => {
       expect(readFile).toHaveBeenCalledWith(tempConfigPath, 'utf8');
       expect(dotenv.parse).toHaveBeenCalled();
       expect(input).toHaveBeenCalledWith({
-        message: 'Enter your TEST_API_KEY for TestProvider:',
+        message:
+          'Enter your TEST_API_KEY for TestProvider (https://testprovider.com):',
         default: '',
       });
       expect(writeFile).toHaveBeenCalledWith(
@@ -130,7 +132,8 @@ describe('Configuration Management', () => {
       await runConfigWizard(tempConfigPath);
 
       expect(input).toHaveBeenCalledWith({
-        message: 'Enter your TEST_API_KEY for TestProvider:',
+        message:
+          'Enter your TEST_API_KEY for TestProvider (https://testprovider.com):',
         default: 'old_test_value',
       });
       expect(writeFile).toHaveBeenCalledWith(
