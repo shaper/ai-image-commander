@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import type { PathLike } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -8,7 +9,6 @@ import dotenv from 'dotenv';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { initConfig, runConfigWizard } from './config';
 import { listProviders } from './providers';
-import type { PathLike } from 'node:fs';
 
 // Mock all external dependencies
 vi.mock('node:fs');
