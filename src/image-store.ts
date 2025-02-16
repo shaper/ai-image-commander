@@ -6,6 +6,7 @@ export interface ImageStore {
   savePrompt: (timestamp: number, prompt: string) => Promise<string>;
   listImages: () => Promise<string[]>;
   loadPromptForImage: (imageFileName: string) => Promise<string | undefined>;
+  timestampFromPath: (filePath: string) => number;
 }
 
 export class LocalImageStore implements ImageStore {
