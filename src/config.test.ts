@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import * as fs from 'node:fs';
 import type { PathLike } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -7,7 +7,12 @@ import type { ProviderV1 } from '@ai-sdk/provider';
 import { input } from '@inquirer/prompts';
 import dotenv from 'dotenv';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { initConfig, runConfigWizard } from './config';
+import {
+  ensureConfigFile,
+  getConfigPath,
+  initConfig,
+  runConfigWizard,
+} from './config';
 import { listProviders } from './providers';
 
 // Mock all external dependencies
@@ -28,9 +33,9 @@ describe('Configuration Management', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     // Setup default mock implementations
-    vi.mocked(existsSync).mockReturnValue(false);
-    vi.mocked(readFileSync).mockReturnValue('EXAMPLE_KEY=example_value');
-    vi.mocked(writeFileSync).mockImplementation(() => undefined);
+    vi.mocked(fs.existsSync).mockReturnValue(false);
+    vi.mocked(fs.readFileSync).mockReturnValue('EXAMPLE_KEY=example_value');
+    vi.mocked(fs.writeFileSync).mockImplementation(() => undefined);
     vi.mocked(readFile).mockResolvedValue('EXISTING_KEY=existing_value');
     vi.mocked(writeFile).mockResolvedValue(undefined);
     vi.mocked(dotenv.parse).mockReturnValue({ EXISTING_KEY: 'existing_value' });
@@ -59,8 +64,8 @@ describe('Configuration Management', () => {
       const result = initConfig(tempConfigPath);
 
       expect(result).toBe(false);
-      expect(existsSync).toHaveBeenCalledWith(tempConfigPath);
-      expect(writeFileSync).toHaveBeenCalledWith(
+      expect(fs.existsSync).toHaveBeenCalledWith(tempConfigPath);
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
         tempConfigPath,
         'EXAMPLE_KEY=example_value',
         { encoding: 'utf8' },
@@ -68,18 +73,18 @@ describe('Configuration Management', () => {
     });
 
     it('should return true when config already exists', () => {
-      vi.mocked(existsSync).mockReturnValue(true);
+      vi.mocked(fs.existsSync).mockReturnValue(true);
 
       const result = initConfig(tempConfigPath);
 
       expect(result).toBe(true);
-      expect(writeFileSync).not.toHaveBeenCalled();
+      expect(fs.writeFileSync).not.toHaveBeenCalled();
     });
   });
 
   describe('runConfigWizard', () => {
     it('should load existing config and prompt for values', async () => {
-      vi.mocked(existsSync).mockReturnValue(true);
+      vi.mocked(fs.existsSync).mockReturnValue(true);
 
       await runConfigWizard(tempConfigPath);
 
@@ -98,7 +103,7 @@ describe('Configuration Management', () => {
     });
 
     it('should create new config when none exists', async () => {
-      vi.mocked(existsSync).mockReturnValue(false);
+      vi.mocked(fs.existsSync).mockReturnValue(false);
 
       await runConfigWizard(tempConfigPath);
 
@@ -113,7 +118,7 @@ describe('Configuration Management', () => {
     });
 
     it('should not write empty config when no input is provided', async () => {
-      vi.mocked(existsSync).mockReturnValue(false);
+      vi.mocked(fs.existsSync).mockReturnValue(false);
       vi.mocked(input).mockResolvedValue('');
 
       await runConfigWizard(tempConfigPath);
@@ -124,7 +129,7 @@ describe('Configuration Management', () => {
     });
 
     it('should preserve existing values when updating config', async () => {
-      vi.mocked(existsSync).mockReturnValue(true);
+      vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(dotenv.parse).mockReturnValue({
         EXISTING_KEY: 'existing_value',
         TEST_API_KEY: 'old_test_value',
@@ -150,7 +155,7 @@ describe('Configuration Management', () => {
 
     it('should import configuration from provided file when creating new config', async () => {
       // Simulate that the main config file does not exist, but the import file does.
-      vi.mocked(existsSync).mockImplementation((path: PathLike) => {
+      vi.mocked(fs.existsSync).mockImplementation((path: PathLike) => {
         if (path.toString() === importFile) return true;
         return false;
       });
@@ -183,7 +188,7 @@ describe('Configuration Management', () => {
     it('should warn and ignore missing import file if it does not exist', async () => {
       const missingImportFile = join(tmpdir(), 'missing.env');
       // Simulate that neither the main config nor the import file exist.
-      vi.mocked(existsSync).mockImplementation(() => false);
+      vi.mocked(fs.existsSync).mockImplementation(() => false);
 
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -206,7 +211,7 @@ describe('Configuration Management', () => {
 
     it('should merge imported config with existing config when updating an existing config file', async () => {
       // Simulate that both the main config and the import file exist.
-      vi.mocked(existsSync).mockImplementation((path: PathLike) => {
+      vi.mocked(fs.existsSync).mockImplementation((path: PathLike) => {
         if (
           path.toString() === tempConfigPath ||
           path.toString() === importFile
@@ -257,6 +262,29 @@ describe('Configuration Management', () => {
         'EXISTING_KEY=existing_value\nTEST_API_KEY=test_input_value',
         { encoding: 'utf8' },
       );
+    });
+  });
+
+  describe('ensureConfigFile', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('should return isNew true when configuration file was just created (file did not exist)', () => {
+      // Simulate that the config file does not exist so that existsSync returns false.
+      vi.spyOn(require('node:fs'), 'existsSync').mockReturnValue(false);
+
+      const result = ensureConfigFile();
+      expect(result.isNew).toBe(true);
+      expect(result.configPath).toBe(getConfigPath());
+    });
+
+    it('should return isNew false when configuration file already exists (file exists)', () => {
+      const spy = vi.spyOn(fs, 'existsSync').mockReturnValue(true);
+
+      const result = ensureConfigFile();
+      expect(result.isNew).toBe(false);
+      expect(result.configPath).toBe(getConfigPath());
     });
   });
 });

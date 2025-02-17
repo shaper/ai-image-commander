@@ -1,9 +1,8 @@
-import { existsSync } from 'node:fs';
+import * as fs from 'node:fs';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import { resolve } from 'node:path';
-import { ExitPromptError } from '@inquirer/core';
 import { input } from '@inquirer/prompts';
 import dotenv from 'dotenv';
 import { listProviders } from './providers';
@@ -15,14 +14,11 @@ export const getConfigPath = () => resolve(os.homedir(), '.aic.conf');
  * Returns true if config already existed, false if it was newly created.
  */
 export function initConfig(configPath: string): boolean {
-  if (!existsSync(configPath)) {
+  if (!fs.existsSync(configPath)) {
     const examplePath = resolve(__dirname, 'aic.conf.example');
     try {
       const exampleContent = readFileSync(examplePath, 'utf8');
       writeFileSync(configPath, exampleContent, { encoding: 'utf8' });
-      console.log(
-        `Initialized configuration file at ${configPath} using template ${examplePath}`,
-      );
       return false;
     } catch (error) {
       console.error(`Failed to initialize config file: ${error}`);
@@ -61,7 +57,6 @@ export async function runConfigWizard(
 
   try {
     await writeFile(configPath, newConfigContent, { encoding: 'utf8' });
-    console.log(`Configuration saved successfully to ${configPath}`);
   } catch (error) {
     console.error(`Error saving configuration: ${error}`);
   }
@@ -75,7 +70,7 @@ export async function runConfigWizard(
 async function loadExistingConfig(
   configPath: string,
 ): Promise<Record<string, string>> {
-  if (existsSync(configPath)) {
+  if (fs.existsSync(configPath)) {
     try {
       const fileContent = await readFile(configPath, 'utf8');
       const parsed = dotenv.parse(fileContent);
@@ -105,7 +100,8 @@ async function loadExistingConfig(
 async function importConfigFromFile(
   importFrom: string,
 ): Promise<Record<string, string>> {
-  if (!existsSync(importFrom)) {
+  console.log(`Importing configuration from ${importFrom}`);
+  if (!fs.existsSync(importFrom)) {
     console.warn(`Import file ${importFrom} does not exist.`);
     return {};
   }
@@ -113,7 +109,6 @@ async function importConfigFromFile(
   try {
     const importedContent = await readFile(importFrom, 'utf8');
     const importedConfig = dotenv.parse(importedContent);
-    console.log(`Imported configuration from ${importFrom}`);
 
     // Get the set of known keys from our providers.
     const providers = listProviders();
@@ -151,4 +146,14 @@ async function promptForApiKeys(
     }
   }
   return currentConfig;
+}
+
+/**
+ * Ensures that the configuration file exists and returns the path and a boolean indicating if it was newly created.
+ * @returns An object containing the path to the configuration file and a boolean indicating if it was newly created.
+ */
+export function ensureConfigFile(): { configPath: string; isNew: boolean } {
+  const configPath = getConfigPath();
+  const configExists = initConfig(configPath);
+  return { configPath, isNew: !configExists };
 }
