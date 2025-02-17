@@ -3,7 +3,7 @@ import { Command, Option } from 'commander';
 import { config } from 'dotenv';
 import open from 'open';
 import { CliController } from './cli-controller';
-import { getConfigPath, initConfig, runConfigWizard } from './config';
+import { ensureConfigFile, runConfigWizard } from './config';
 import { runImageGeneration } from './generate';
 import { LocalImageStore } from './image-store';
 import { hasApiKey, listProviders } from './providers';
@@ -30,15 +30,10 @@ const program = new Command()
 program
   .command('config')
   .description('View or update your configuration settings')
-  .addOption(
-    new Option(
-      '--from <file>',
-      'Path to an existing .env or config file to import settings from',
-    ),
-  )
-  .action(async (options) => {
-    console.log('Launching the configuration wizard...');
-    await runConfigWizard(getConfigPath(), options.from);
+  .action(async (_, command) => {
+    const importFrom = command.parent.opts().from;
+    const { configPath } = ensureConfigFile();
+    await runConfigWizard(configPath, importFrom);
   });
 
 const options = program.opts();
@@ -46,10 +41,8 @@ const saveDir: string = options.dir || DEFAULT_SAVE_DIR;
 
 program.action(async () => {
   try {
-    const configPath = getConfigPath();
-    const configExists = initConfig(configPath);
-    if (!configExists) {
-      console.log('No configuration file found. Running setup wizard...');
+    const { configPath, isNew } = ensureConfigFile();
+    if (isNew || options.from) {
       await runConfigWizard(configPath, options.from);
     }
     config({ path: configPath });
