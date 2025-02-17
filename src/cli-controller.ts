@@ -82,6 +82,8 @@ export class CliController {
             break;
           default: {
             lastPrompt = prompt;
+
+            // Select a provider.
             const chosenProvider = await select({
               message: 'Choose a provider',
               default: lastSelectedProvider,
@@ -102,6 +104,7 @@ export class CliController {
             }
             lastSelectedProvider = chosenProvider;
 
+            // Select a model.
             const chosenModel = await select({
               message: 'Choose an image model',
               default: lastSelectedModel,
@@ -111,6 +114,8 @@ export class CliController {
               })),
             });
             lastSelectedModel = chosenModel;
+
+            // Run the image generation.
             latestImageEntry = await this.config.runImageGeneration(
               imageStore,
               prompt,

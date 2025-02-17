@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { shuffleArray } from './utils';
+import { deepFreeze, shuffleArray } from './utils';
 
 describe('shuffleArray', () => {
   it('should return an array of the same length', () => {
@@ -50,5 +50,46 @@ describe('shuffleArray', () => {
     expect(result1).not.toEqual(result2);
 
     mockMath.mockRestore();
+  });
+});
+
+describe('deepFreeze', () => {
+  it('should freeze the object itself', () => {
+    const obj = { foo: 'bar' };
+    const frozenObj = deepFreeze(obj);
+    expect(Object.isFrozen(frozenObj)).toBe(true);
+  });
+
+  it('should freeze nested objects', () => {
+    const obj = { a: { b: { c: 'd' } } };
+    const frozenObj = deepFreeze(obj);
+    expect(Object.isFrozen(frozenObj)).toBe(true);
+    expect(Object.isFrozen(frozenObj.a)).toBe(true);
+    expect(Object.isFrozen(frozenObj.a.b)).toBe(true);
+  });
+
+  it('should not allow modifications', () => {
+    const obj = { x: 10, nested: { y: 20 } };
+    deepFreeze(obj);
+
+    // In strict mode, modifying a frozen property will throw an error.
+    expect(() => {
+      obj.x = 100;
+    }).toThrowError(TypeError);
+
+    expect(() => {
+      obj.nested.y = 200;
+    }).toThrowError(TypeError);
+
+    // Verify that values remain unchanged.
+    expect(obj.x).toBe(10);
+    expect(obj.nested.y).toBe(20);
+  });
+
+  it('should freeze functions as properties', () => {
+    const fn = () => 'hello';
+    const obj = { fn };
+    const frozenObj = deepFreeze(obj);
+    expect(Object.isFrozen(frozenObj.fn)).toBe(true);
   });
 });
