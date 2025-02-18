@@ -1,6 +1,10 @@
 # AI Image Commander (`aic`) CLI Tool
 
+<img src="assets/quetzal.jpg" width="256" align="right" style="margin-left: 10px" alt="A resplendent quetzal, the official mascot of AI Image Commander">
+
 AI Image Commander (`aic`) is a command-line tool for generating AI images interactively. `aic` is built with the [AI SDK by Vercel](https://sdk.vercel.ai/) and supports a variety of providers and models.
+
+<br clear="all">
 
 ## Installation
 
@@ -14,7 +18,7 @@ pnpm link --global
 
 ## Configuration
 
-The first time you run `aic`, it will automatically create a configuration file at `~/.aic.conf` and guide you through setting up your API keys for various providers. If you already have a configuration file with API keys, you can import it during first run:
+The first time you run `aic`, it will automatically create a configuration file at `~/.aic.conf` and guide you through setting up your API keys for various providers. See [aic.conf.example](aic.conf.example) for the API key names. If you already have a configuration file with some of these API keys, you can import it during first run:
 
 ```bash
 aic --from .env
