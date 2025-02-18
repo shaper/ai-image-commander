@@ -1,102 +1,98 @@
 import terminalImage from 'terminal-image';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { ImageStore } from './image-store';
+import { FakeImageRepository } from './fake-image-store';
+import type { ImageEntry } from './image-entry';
 import { showNextImage } from './show-next-image';
-
-// Mock terminal-image
-vi.mock('terminal-image', () => ({
-  default: {
-    file: vi.fn().mockResolvedValue('mocked terminal output'),
-  },
-}));
-
-// Create individual mock functions that are properly typed
-const listImagesMock = vi.fn();
-const loadPromptForImageMock = vi.fn();
-const timestampFromPathMock = vi.fn();
-const saveImageMock = vi.fn();
-const savePromptMock = vi.fn();
-
-// Create your mock object with these mocks
-const mockImageStore: ImageStore = {
-  baseDir: '/mock/path',
-  listImages: listImagesMock,
-  loadPromptForImage: loadPromptForImageMock,
-  timestampFromPath: timestampFromPathMock,
-  saveImage: saveImageMock,
-  savePrompt: savePromptMock,
-} as unknown as ImageStore;
 
 describe('showNextImage', () => {
   let consoleLogSpy: ReturnType<typeof vi.spyOn>;
+  let imageRepo: FakeImageRepository;
+
   beforeEach(() => {
     consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    imageRepo = new FakeImageRepository();
+    vi.spyOn(terminalImage, 'file').mockResolvedValue('mocked terminal output');
   });
+
   afterEach(() => {
     consoleLogSpy.mockRestore();
   });
 
-  const mockFiles = [
-    '/path/to/image1.png',
-    '/path/to/image2.png',
-    '/path/to/image3.png',
-  ];
-
   it('should return undefined when no images are available', async () => {
-    listImagesMock.mockResolvedValueOnce([]);
-
-    const result = await showNextImage(mockImageStore);
+    imageRepo.list.mockResolvedValueOnce([]);
+    const result = await showNextImage(imageRepo);
     expect(result).toBeUndefined();
     expect(terminalImage.file).not.toHaveBeenCalled();
   });
 
   it('should display an image and return image entry when images are available', async () => {
-    listImagesMock.mockResolvedValueOnce(mockFiles);
-    loadPromptForImageMock.mockResolvedValueOnce('test prompt');
-    timestampFromPathMock.mockReturnValueOnce(new Date('2024-01-01'));
-
-    const result = await showNextImage(mockImageStore);
-
-    expect(result).toBeDefined();
-    expect(result).toEqual({
-      timestamp: new Date('2024-01-01'),
+    const mockEntry: ImageEntry = {
+      id: '1',
+      createdAt: 123456,
       prompt: 'test prompt',
-      imagePath: expect.stringContaining('/path/to/image'),
+      imageFileName: '/path/to/image1.png',
+    };
+    imageRepo.list.mockResolvedValueOnce([mockEntry]);
+
+    const result = await showNextImage(imageRepo);
+
+    expect(result).toMatchObject({
+      id: '1',
+      createdAt: 123456,
+      prompt: 'test prompt',
+      imageFileName: expect.stringContaining('/path/to/image'),
     });
-    expect(terminalImage.file).toHaveBeenCalledWith(
-      expect.stringContaining('/path/to/image'),
-    );
   });
 
   it('should handle images without prompts', async () => {
-    listImagesMock.mockResolvedValueOnce(mockFiles);
-    loadPromptForImageMock.mockResolvedValueOnce(null);
-    timestampFromPathMock.mockReturnValueOnce(new Date('2024-01-01'));
+    const mockEntry: ImageEntry = {
+      id: '1',
+      createdAt: 123456,
+      prompt: undefined,
+      imageFileName: '/path/to/image1.png',
+    };
+    imageRepo.list.mockResolvedValueOnce([mockEntry]);
 
-    const consoleSpy = vi.spyOn(console, 'log');
-    const result = await showNextImage(mockImageStore);
+    const result = await showNextImage(imageRepo);
 
     expect(result).toBeDefined();
-    expect(result?.prompt).toBeNull();
-    expect(consoleSpy).not.toHaveBeenCalledWith(expect.stringContaining('"'));
+    expect(result?.prompt).toBeUndefined();
+    expect(consoleLogSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('"'),
+    );
   });
 
   it('should randomly select an image from available files', async () => {
-    // Run multiple times to ensure randomization
-    listImagesMock.mockResolvedValue(mockFiles);
-    loadPromptForImageMock.mockResolvedValue('test prompt');
-    timestampFromPathMock.mockReturnValue(new Date('2024-01-01'));
+    const mockEntries: ImageEntry[] = [
+      {
+        id: '1',
+        createdAt: 123456,
+        prompt: 'prompt 1',
+        imageFileName: '/path/to/image1.png',
+      },
+      {
+        id: '2',
+        createdAt: 123457,
+        prompt: 'prompt 2',
+        imageFileName: '/path/to/image2.png',
+      },
+      {
+        id: '3',
+        createdAt: 123458,
+        prompt: 'prompt 3',
+        imageFileName: '/path/to/image3.png',
+      },
+    ];
+    imageRepo.list.mockResolvedValueOnce(mockEntries);
 
-    const results = new Set();
+    const results = new Set<string>();
     for (let i = 0; i < 10; i++) {
-      const result = await showNextImage(mockImageStore);
+      const result = await showNextImage(imageRepo);
       if (result) {
-        results.add(result.imagePath);
+        results.add(result.id);
       }
     }
 
-    // We should see different images being selected
-    // Note: This is probabilistic and could theoretically fail
     expect(results.size).toBeGreaterThan(1);
   });
 });

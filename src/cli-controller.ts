@@ -1,7 +1,7 @@
 import type { ProviderV1 } from '@ai-sdk/provider';
 import { ExitPromptError } from '@inquirer/core';
 import type { ImageEntry } from './image-entry';
-import type { ImageStore } from './image-store';
+import type { ImageRepository } from './image-repository';
 import { hasApiKey, listProviders } from './providers';
 import type { ProviderEntry } from './providers';
 
@@ -18,11 +18,11 @@ interface CliControllerConfig {
     }>;
   }) => Promise<T>;
   log: (msg: string) => void;
-  imageStore: ImageStore;
+  imageRepo: ImageRepository;
   showNextImage: () => Promise<ImageEntry | undefined>;
   openImage: (path: string) => void;
   runImageGeneration: (
-    imageStore: ImageStore,
+    imageRepo: ImageRepository,
     prompt: string,
     provider: ProviderV1,
     modelId: string,
@@ -33,7 +33,7 @@ export class CliController {
   constructor(private readonly config: CliControllerConfig) {}
 
   async runCommandLoop(): Promise<void> {
-    const { input, select, log, imageStore, openImage } = this.config;
+    const { input, select, log, imageRepo, openImage } = this.config;
 
     function printHelp() {
       log('\nMenu Options:');
@@ -71,8 +71,8 @@ export class CliController {
             break;
           case 'o':
           case 'open':
-            if (latestImageEntry) {
-              openImage(latestImageEntry.imagePath);
+            if (latestImageEntry?.imageFileName) {
+              openImage(latestImageEntry.imageFileName);
             }
             break;
           case 'help':
@@ -117,7 +117,7 @@ export class CliController {
 
             // Run the image generation.
             latestImageEntry = await this.config.runImageGeneration(
-              imageStore,
+              imageRepo,
               prompt,
               chosenProvider.provider,
               chosenModel,

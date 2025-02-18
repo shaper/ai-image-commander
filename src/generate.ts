@@ -4,11 +4,11 @@ import imageType from 'image-type';
 import ora from 'ora';
 import sharp from 'sharp';
 import terminalImage from 'terminal-image';
-import type { ImageEntry } from './image-entry';
-import type { ImageStore } from './image-store';
+import { type ImageEntry, createImageEntry } from './image-entry';
+import type { ImageRepository } from './image-repository';
 
 export async function runImageGeneration(
-  imageStore: ImageStore,
+  imageRepo: ImageRepository,
   prompt: string,
   provider: ProviderV1,
   modelId: string,
@@ -47,14 +47,7 @@ export async function runImageGeneration(
       // Render the image to the terminal.
       console.log(await terminalImage.buffer(imageBuffer));
 
-      const timestamp = Date.now();
-      const imagePath = await imageStore.saveImage(timestamp, imageBuffer);
-      await imageStore.savePrompt(timestamp, prompt);
-      return {
-        timestamp,
-        prompt,
-        imagePath,
-      };
+      return imageRepo.save(createImageEntry(prompt), imageBuffer);
     }
   } catch (error) {
     spinner.fail('Image generation failed.');
