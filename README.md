@@ -1,6 +1,6 @@
 # AI Image Commander (`aic`) CLI Tool
 
-<img src="assets/quetzal.jpg" width="256" align="right" style="margin-left: 10px" alt="A resplendent quetzal, the official mascot of AI Image Commander">
+<img src="assets/quetzal.jpg" width="128" align="right" style="margin-left: 10px" alt="A resplendent quetzal, the official mascot of AI Image Commander">
 
 AI Image Commander (`aic`) is a command-line tool for generating AI images interactively. `aic` is built with the [AI SDK by Vercel](https://sdk.vercel.ai/) and supports a variety of providers and models.
 
