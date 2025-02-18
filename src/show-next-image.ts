@@ -13,14 +13,14 @@ export async function showNextImage(
 
   const shuffledFiles = shuffleArray(availableFiles);
   const randomFile = shuffledFiles[0];
-  const prompt = randomFile.prompt;
-  if (prompt) {
-    console.log(`"${prompt}"`);
-  }
 
   if (randomFile.imageFileName) {
     const terminalOutput = await terminalImage.file(randomFile.imageFileName);
     console.log(terminalOutput);
+  }
+  const prompt = randomFile.prompt;
+  if (prompt) {
+    console.log(`"${prompt}"`);
   }
 
   return randomFile;

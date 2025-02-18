@@ -46,8 +46,11 @@ export async function runImageGeneration(
 
       // Render the image to the terminal.
       console.log(await terminalImage.buffer(imageBuffer));
+      console.log(prompt);
 
-      return imageRepo.save(createImageEntry(prompt), imageBuffer);
+      const entry = await imageRepo.save(createImageEntry(prompt), imageBuffer);
+      console.log(`Saved image to ${entry.imageFileName}`);
+      return entry;
     }
   } catch (error) {
     spinner.fail('Image generation failed.');
