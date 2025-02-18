@@ -5,7 +5,7 @@ import open from 'open';
 import { CliController } from './cli-controller';
 import { ensureConfigFile, runConfigWizard } from './config';
 import { runImageGeneration } from './generate';
-import { LocalImageStore } from './image-store';
+import { LocalImageRepository } from './local-image-repository';
 import { hasApiKey, listProviders } from './providers';
 import { showNextImage } from './show-next-image';
 
@@ -56,14 +56,14 @@ program.action(async () => {
       process.exit(1);
     }
 
-    const imageStore = new LocalImageStore(saveDir);
+    const imageRepo = new LocalImageRepository(saveDir);
 
     const controller = new CliController({
       input,
       select,
       log: console.log,
-      imageStore,
-      showNextImage: () => showNextImage(imageStore),
+      imageRepo,
+      showNextImage: () => showNextImage(imageRepo),
       openImage: open,
       runImageGeneration,
     });

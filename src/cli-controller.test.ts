@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CliController } from './cli-controller';
+import { FakeImageRepository } from './fake-image-store';
 import * as generateModule from './generate';
 import type { ImageEntry } from './image-entry';
-import { FakeImageStore } from './test/fake-image-store';
+import type { ImageRepository } from './image-repository';
 
 const mockInput = vi.fn();
 const mockSelect = vi.fn();
@@ -11,16 +12,16 @@ const mockShowNextImage = vi.fn();
 const mockOpenImage = vi.fn();
 const mockRunImageGeneration = vi.fn();
 let controller: CliController;
-let fakeImageStore: FakeImageStore;
+let fakeImageRepository: FakeImageRepository;
 
 beforeEach(() => {
   vi.clearAllMocks();
-  fakeImageStore = new FakeImageStore();
+  fakeImageRepository = new FakeImageRepository();
   controller = new CliController({
     input: mockInput,
     select: mockSelect,
     log: mockLog,
-    imageStore: fakeImageStore,
+    imageRepo: fakeImageRepository,
     showNextImage: mockShowNextImage,
     openImage: mockOpenImage,
     runImageGeneration: mockRunImageGeneration,
@@ -53,9 +54,10 @@ describe('CliController', () => {
 
   it('should show next image when "next" command is given', async () => {
     const mockImage: ImageEntry = {
-      imagePath: 'path/to/image.png',
+      id: '1',
+      createdAt: Date.now(),
       prompt: 'test prompt',
-      timestamp: Date.now(),
+      imageFileName: 'path/to/image.png',
     };
 
     mockInput.mockResolvedValueOnce('next').mockResolvedValueOnce('exit');
@@ -69,9 +71,10 @@ describe('CliController', () => {
 
   it('should open last image when "open" command is given', async () => {
     const mockImage: ImageEntry = {
-      imagePath: 'path/to/image.png',
+      id: '1',
+      createdAt: Date.now(),
       prompt: 'test prompt',
-      timestamp: Date.now(),
+      imageFileName: 'path/to/image.png',
     };
 
     // First generate an image
@@ -92,14 +95,15 @@ describe('CliController', () => {
 
     await controller.runCommandLoop();
 
-    expect(mockOpenImage).toHaveBeenCalledWith(mockImage.imagePath);
+    expect(mockOpenImage).toHaveBeenCalledWith(mockImage.imageFileName);
   });
 
   it('should handle image generation with valid prompt', async () => {
     const mockImage: ImageEntry = {
-      imagePath: 'path/to/image.png',
+      id: '1',
+      createdAt: Date.now(),
       prompt: 'test prompt',
-      timestamp: Date.now(),
+      imageFileName: 'path/to/image.png',
     };
 
     const mockProvider = {

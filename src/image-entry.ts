@@ -1,5 +1,22 @@
+import { randomUUID } from 'node:crypto';
+
 export interface ImageEntry {
-  timestamp: number;
+  id: string;
+  createdAt: number;
   prompt: string | undefined;
-  imagePath: string;
+  imageFileName: string | undefined;
+  metadata?: Record<string, unknown>;
+}
+
+export function createImageEntry(
+  prompt: string | undefined,
+  metadata?: Record<string, unknown>,
+): ImageEntry {
+  return {
+    id: randomUUID(),
+    createdAt: Date.now(),
+    prompt,
+    imageFileName: undefined,
+    metadata,
+  };
 }
