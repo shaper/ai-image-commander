@@ -56,7 +56,7 @@ export class CliController {
     while (running) {
       try {
         const prompt = await input({
-          message: 'Enter a prompt',
+          message: 'Enter a prompt or command',
           default: lastPrompt.trim() || undefined,
         });
         const command = prompt.trim().toLowerCase() || lastCommand;
