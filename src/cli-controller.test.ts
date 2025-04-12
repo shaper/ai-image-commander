@@ -36,7 +36,7 @@ describe('CliController', () => {
 
     expect(mockInput).toHaveBeenCalledTimes(1);
     expect(mockInput).toHaveBeenCalledWith({
-      message: 'Enter a prompt',
+      message: 'Enter a prompt or command',
       default: undefined,
     });
   });
@@ -159,7 +159,7 @@ describe('CliController', () => {
     await controller.runCommandLoop();
 
     expect(mockInput).toHaveBeenNthCalledWith(2, {
-      message: 'Enter a prompt',
+      message: 'Enter a prompt or command',
       default: 'test prompt',
     });
   });
