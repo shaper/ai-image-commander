@@ -18,6 +18,7 @@
     "format:fix": "biome format --write",
     "test": "vitest run",
     "type-check": "tsc --noEmit",
+    "release": "pnpm build && changeset publish",
     "start": "node dist/cli.js"
   },
   "dependencies": {
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@changesets/cli": "^2.29.2",
     "@types/node": "^22.14.1",
     "copyfiles": "^2.4.1",
     "tsup": "^8.4.0",
