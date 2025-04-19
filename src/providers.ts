@@ -4,6 +4,7 @@ import { fireworks } from '@ai-sdk/fireworks';
 import { vertex } from '@ai-sdk/google-vertex';
 import { luma } from '@ai-sdk/luma';
 import { openai } from '@ai-sdk/openai';
+import { xai } from '@ai-sdk/xai';
 import type { ProviderV1 } from '@ai-sdk/provider';
 import { replicate } from '@ai-sdk/replicate';
 import { togetherai } from '@ai-sdk/togetherai';
@@ -190,5 +191,12 @@ const PROVIDERS: ReadonlyArray<ProviderEntry> = deepFreeze([
       'GOOGLE_VERTEX_LOCATION',
     ],
     website: 'https://cloud.google.com/vertex-ai',
+  },
+  {
+    name: 'xai',
+    provider: xai,
+    models: ['grok-2-image'],
+    apiKeyNames: ['XAI_API_KEY'],
+    website: 'https://x.ai',
   },
 ]);
