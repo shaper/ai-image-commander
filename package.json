@@ -33,6 +33,7 @@
     "@ai-sdk/provider": "^1.1.2",
     "@ai-sdk/replicate": "^0.2.6",
     "@ai-sdk/togetherai": "^0.2.9",
+    "@ai-sdk/xai": "^1.2.13",
     "@inquirer/core": "^10.1.10",
     "@inquirer/prompts": "^7.4.1",
     "ai": "^4.3.5",
