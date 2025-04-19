@@ -19,6 +19,7 @@
     "format:fix": "biome format --write",
     "test": "vitest run",
     "type-check": "tsc --noEmit",
+    "version": "changeset version && pnpm format:fix",
     "release": "pnpm build && changeset publish",
     "start": "node dist/cli.js"
   },
