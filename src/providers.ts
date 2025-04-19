@@ -4,10 +4,10 @@ import { fireworks } from '@ai-sdk/fireworks';
 import { vertex } from '@ai-sdk/google-vertex';
 import { luma } from '@ai-sdk/luma';
 import { openai } from '@ai-sdk/openai';
-import { xai } from '@ai-sdk/xai';
 import type { ProviderV1 } from '@ai-sdk/provider';
 import { replicate } from '@ai-sdk/replicate';
 import { togetherai } from '@ai-sdk/togetherai';
+import { xai } from '@ai-sdk/xai';
 import { deepFreeze } from './utils';
 
 export interface ProviderEntry {
