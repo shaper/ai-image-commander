@@ -14,17 +14,15 @@ AI Image Commander (`aic`) is a command-line tool for generating AI images inter
 
 ## Installation
 
-As a command-line tool, installing it globally is most useful so that it's available in your `PATH`, allowing you to run `aic` from any directory.
-
 ```bash
 pnpm install -g ai-image-commander
 ```
 
 ## Configuration
 
-The first time you run `aic`, it will automatically create a configuration file at `~/.aic.conf` and guide you through setting up your API keys for various providers. See [aic.conf.example](aic.conf.example) for the API key names.
+The first time you run `aic` it will automatically create a configuration file at `~/.aic.conf` and guide you through setting up your API keys for various providers. See [aic.conf.example](aic.conf.example) for the API key names.
 
-To import existing API keys from a .env file during first-time setup:
+To import existing API keys from a .env file:
 ```bash
 aic --from .env
 ```
@@ -32,7 +30,7 @@ aic --from .env
 To view or update your settings at any time:
 ```bash
 aic config
-aic config --from .env  # to import again from elsewhere
+aic config --from .env  # to import again
 ```
 
 ## Running the CLI Tool
