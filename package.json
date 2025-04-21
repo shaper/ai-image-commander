@@ -8,7 +8,10 @@
     "aic": "./dist/cli.js"
   },
   "type": "module",
-  "files": ["dist", "CHANGELOG.md"],
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "packageManager": "pnpm@9.12.3",
   "scripts": {
     "build": "tsup && copyfiles \"aic.conf.example\" dist",
@@ -24,23 +27,23 @@
     "start": "node dist/cli.js"
   },
   "dependencies": {
-    "@ai-sdk/deepinfra": "^0.2.10",
-    "@ai-sdk/fal": "^0.1.7",
-    "@ai-sdk/fireworks": "^0.2.9",
-    "@ai-sdk/google-vertex": "^2.2.14",
-    "@ai-sdk/luma": "^0.1.6",
-    "@ai-sdk/openai": "^1.3.10",
-    "@ai-sdk/provider": "^1.1.2",
-    "@ai-sdk/replicate": "^0.2.6",
-    "@ai-sdk/togetherai": "^0.2.9",
+    "@ai-sdk/deepinfra": "^0.2.12",
+    "@ai-sdk/fal": "^0.1.10",
+    "@ai-sdk/fireworks": "^0.2.11",
+    "@ai-sdk/google-vertex": "^2.2.16",
+    "@ai-sdk/luma": "^0.1.7",
+    "@ai-sdk/openai": "^1.3.16",
+    "@ai-sdk/provider": "^1.1.3",
+    "@ai-sdk/replicate": "^0.2.7",
+    "@ai-sdk/togetherai": "^0.2.11",
     "@ai-sdk/xai": "^1.2.13",
     "@inquirer/core": "^10.1.10",
     "@inquirer/prompts": "^7.4.1",
-    "ai": "^4.3.5",
+    "ai": "^4.3.9",
     "commander": "^13.1.0",
     "dotenv": "^16.5.0",
     "image-type": "^5.2.0",
-    "open": "^10.1.0",
+    "open": "^10.1.1",
     "ora": "^8.2.0",
     "sharp": "^0.34.1",
     "terminal-image": "^3.1.1"
