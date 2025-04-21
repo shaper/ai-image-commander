@@ -1,5 +1,11 @@
 # ai-image-commander
 
+## 0.0.6
+
+### Patch Changes
+
+- 20fb1fa: chore: update packages to pick up new @ai-sdk/fal for better model compatibility
+
 ## 0.0.5
 
 ### Patch Changes
