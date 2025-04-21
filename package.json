@@ -8,10 +8,7 @@
     "aic": "./dist/cli.js"
   },
   "type": "module",
-  "files": [
-    "dist",
-    "CHANGELOG.md"
-  ],
+  "files": ["dist", "CHANGELOG.md"],
   "packageManager": "pnpm@9.12.3",
   "scripts": {
     "build": "tsup && copyfiles \"aic.conf.example\" dist",
